@@ -1,0 +1,8 @@
+{
+  "name": "PropertyLelo - India's Trusted Property Marketplace",
+  "description": "India's premier real estate portal for verified property listings, high-yield investments, zero-brokerage rentals, interactive EMI tools, and comprehensive city price trends.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
