@@ -1,4 +1,4 @@
-import { Property, CityData, NewProject, Testimonial, Article } from '../types/property';
+import { Property, CityData, NewProject, Testimonial, Article, BlogArticle } from '../types/property';
 
 export const CITIES_DATA: CityData[] = [
   {
@@ -225,7 +225,7 @@ export const PROPERTIES_DATA: Property[] = [
   {
     id: 'prop-4',
     title: 'Designer Studio Apartment / 1 BHK',
-    tagline: 'High rental yield asset near Lokhandwala Complex',
+    tagline: 'High capital appreciation asset near Lokhandwala Complex',
     type: 'Studio Flat',
     category: 'Buy',
     bhk: 1,
@@ -264,7 +264,7 @@ export const PROPERTIES_DATA: Property[] = [
   {
     id: 'prop-5',
     title: 'Grade-A Commercial Office Suite',
-    tagline: 'Pre-leased to MNC IT tenant with 8.2% gross rental yield',
+    tagline: 'Pre-leased to MNC IT tenant with 8.2% gross annual ROI',
     type: 'Commercial Office',
     category: 'Commercial',
     bhk: 0,
@@ -295,7 +295,7 @@ export const PROPERTIES_DATA: Property[] = [
     balconies: 0,
     parking: '4 Reserved Basement Slots',
     amenities: ['100% Dual Power Backup', 'Central Air Conditioning', 'LEED Gold Certified', 'Food Court', 'Multi-tier Security', 'Conference Rooms'],
-    description: 'Fully furnished Grade-A corporate office with 32 workstations, 2 director cabins, 10-seater boardroom, pantry, and server room. Generating ₹1.25 Lakh monthly assured rental with 9-year lease lock-in.',
+    description: 'Fully furnished Grade-A corporate office with 32 workstations, 2 director cabins, 10-seater boardroom, pantry, and server room. Generating ₹1.25 Lakh monthly assured return with 9-year corporate lease lock-in.',
     maintenanceCharges: '₹12/sq.ft',
     featured: true,
     virtualTourAvailable: true
@@ -418,14 +418,14 @@ export const PROPERTIES_DATA: Property[] = [
   },
   {
     id: 'prop-9',
-    title: 'Luxury 3 BHK Rental Apartment',
-    tagline: 'Fully furnished with Italian decor, ready for immediate move-in',
+    title: 'Luxury 3 BHK High-Rise Apartment',
+    tagline: 'Fully furnished with Italian decor, ready for immediate possession',
     type: 'Apartment',
-    category: 'Rent',
+    category: 'Buy',
     bhk: 3,
-    price: 65000,
-    priceFormatted: '₹65,000/mo',
-    pricePerSqft: 38,
+    price: 18500000,
+    priceFormatted: '₹1.85 Cr',
+    pricePerSqft: 10882,
     area: 1700,
     locality: 'Golf Course Extension Road',
     city: 'Gurgaon',
@@ -448,21 +448,21 @@ export const PROPERTIES_DATA: Property[] = [
     balconies: 3,
     parking: '2 Covered Slots',
     amenities: ['100% Power Backup', 'Club Membership Included', 'Gym', 'Swimming Pool', 'Smart Lock Door'],
-    description: 'Tastefully furnished apartment with Samsung 65" OLED TV, king beds with orthopedic mattresses, double-door refrigerator, dishwasher, washing machine, and high speed Wi-Fi setup.',
-    maintenanceCharges: '₹5,000/month (Included in Rent)',
+    description: 'Tastefully furnished apartment with Italian marble flooring, king beds with orthopedic mattresses, modular kitchen, and high speed Wi-Fi setup.',
+    maintenanceCharges: '₹5,000/month',
     featured: false,
     virtualTourAvailable: true
   },
   {
     id: 'prop-10',
-    title: 'Modern 2 BHK Rental Flat',
-    tagline: 'Zero brokerage deal directly from owner near EON IT Park',
+    title: 'Modern 2 BHK Gated Community Flat',
+    tagline: 'Zero brokerage freehold property directly from owner near EON IT Park',
     type: 'Apartment',
-    category: 'Rent',
+    category: 'Buy',
     bhk: 2,
-    price: 32000,
-    priceFormatted: '₹32,000/mo',
-    pricePerSqft: 30,
+    price: 7800000,
+    priceFormatted: '₹78 Lakh',
+    pricePerSqft: 7428,
     area: 1050,
     locality: 'Kharadi',
     city: 'Pune',
@@ -644,14 +644,14 @@ export const PROPERTIES_DATA: Property[] = [
   },
   {
     id: 'prop-15',
-    title: 'Co-Living / PG Luxury Suite',
-    tagline: 'All inclusive private room with meals & housekeeping',
+    title: 'Independent Studio Penthouse Suite',
+    tagline: 'High-yield freehold studio suite in prime startup corridor',
     type: 'Studio Flat',
-    category: 'PG-Coliving',
+    category: 'Buy',
     bhk: 1,
-    price: 18500,
-    priceFormatted: '₹18,500/mo',
-    pricePerSqft: 52,
+    price: 4800000,
+    priceFormatted: '₹48 Lakh',
+    pricePerSqft: 13714,
     area: 350,
     locality: 'HSR Layout Sector 1',
     city: 'Bangalore',
@@ -663,7 +663,7 @@ export const PROPERTIES_DATA: Property[] = [
     ],
     verified: true,
     postedBy: 'Builder',
-    posterName: 'Zolo Stays & Coliving',
+    posterName: 'Bangalore Realty Associates',
     posterPhone: '+91 80471 08899',
     postedDate: 'Yesterday',
     furnishing: 'Furnished',
@@ -672,10 +672,10 @@ export const PROPERTIES_DATA: Property[] = [
     floor: '3rd of 5 Floors',
     bathrooms: 1,
     balconies: 1,
-    parking: 'Bike & 1 Car Parking',
-    amenities: ['Daily Housekeeping', '3 Times Gourmet Meals', 'High Speed 300 Mbps Wi-Fi', 'PlayStation Lounge', 'Laundry Station', 'Biometric Lock'],
-    description: 'Premium coliving studio suite in Bangalore\'s startup hub HSR. Includes private attached bathroom, work desk with ergonomic chair, wardrobe, hot water, electricity and weekly linen change.',
-    maintenanceCharges: '₹0 (All Inclusive)',
+    parking: 'Dedicated Car Parking',
+    amenities: ['100% Power Backup', 'High Speed Wi-Fi Ready', 'Covered Parking', 'Security Surveillance', 'Biometric Lock'],
+    description: 'Premium freehold studio suite in Bangalore startup hub HSR. Includes private attached bathroom, work desk with ergonomic chair, wardrobe, and 24/7 security.',
+    maintenanceCharges: '₹1,500/month',
     featured: false,
     virtualTourAvailable: false
   },
@@ -855,38 +855,139 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
   }
 ];
 
-export const ARTICLES_DATA: Article[] = [
+export const BLOG_ARTICLES_DATA: BlogArticle[] = [
   {
-    id: 'art-1',
+    id: 'blog-1',
     title: 'Top 5 Emerging Metro & Expressways Corridors in India for 2026-2028',
+    slug: 'top-emerging-metro-expressway-corridors-india-2026',
     excerpt: 'Deep-dive analysis into infrastructure catalysts: Dwarka Expressway, Bangalore Airport Metro, Pune Ring Road, and Jewar Airport impact.',
+    content: `## Infrastructure Catalysts Transforming Indian Real Estate in 2026
+
+India's real estate sector is witnessing a monumental infrastructure boom. With mega connectivity projects nearing completion in 2026, property appreciation in peripheral growth hubs is outperforming traditional city centers.
+
+### 1. Dwarka Expressway & Northern Peripheral Road (Delhi NCR)
+Connecting Shiv Murti on NH-8 in Delhi to Kherki Daula toll plaza in Gurgaon, this 29-km expressway has transformed Sectors 102 through 113 into prime luxury corridors. Grade-A developers like Godrej, Sobha, and Tata have launched gated high-rises commanding upwards of ₹16,000/sq.ft.
+
+### 2. Bengaluru Airport Metro Line (Blue Line Phase 2B)
+Running from Silk Board through Hebbal to Kempegowda International Airport, this metro line is reducing commute times by 65%. Micro-markets along Bagalur, Hennur, and Yelahanka are experiencing 18-24% YoY capital gains.
+
+### 3. Pune Ring Road & Hinjewadi-Shivajinagar Metro
+Pune's IT talent influx has expanded demand toward Baner, Wakad, and Punawale. With the upcoming 128-km ring road and metro corridor, logistical bottlenecks are being eliminated.
+
+### Key Investment Takeaway
+Target RERA-certified projects with 18-24 months to possession located within 1.5 km of operational or upcoming transit nodes to capture peak value appreciation.`,
     category: 'Market Trends',
     readTime: '6 min read',
     date: 'Aug 18, 2026',
-    author: 'Sunil Rao (Chief Research Analyst)',
-    image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80'
+    authorId: 'team-editor-1',
+    authorName: 'Sunil Rao',
+    authorRole: 'Chief Research Analyst',
+    coverImage: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80',
+    status: 'published',
+    seo: {
+      focusKeyword: 'emerging real estate corridors india 2026',
+      metaTitle: 'Top 5 Emerging Real Estate Corridors in India 2026 | PropertyLelo',
+      metaDescription: 'Explore the top real estate growth corridors across Delhi NCR, Bangalore, Mumbai, and Pune driven by Dwarka Expressway and airport metro lines.',
+      canonicalUrl: 'https://propertylelo.com/insights/top-emerging-metro-expressway-corridors-india-2026',
+      ogTitle: 'Top Emerging Real Estate Corridors in India (2026-2028)',
+      ogDescription: 'Which cities offer highest capital appreciation in 2026? Check expert infrastructure analysis and verified RERA project recommendations.',
+      ogImage: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80',
+      robotsIndex: true,
+      robotsFollow: true,
+      schemaType: 'Article'
+    }
   },
   {
-    id: 'art-2',
+    id: 'blog-2',
     title: 'RERA Checklist: 7 Legal Documents First-Time Homebuyers Must Verify',
+    slug: 'rera-checklist-7-legal-documents-homebuyers',
     excerpt: 'Avoid disputes by checking Encumbrance Certificate, Approved Master Plan, Occupancy Certificate (OC), and Title Deeds before signing.',
+    content: `## The Ultimate Indian Real Estate Due Diligence Checklist
+
+Buying a home is often the largest financial commitment of a lifetime. The Real Estate (Regulation and Development) Act (RERA) was introduced to safeguard buyer interests, yet due diligence on property title and builder approvals remains imperative.
+
+### 1. State RERA Registration Number
+Verify the project registration on the official state RERA portal (e.g., MahaRERA, UP-RERA, HRERA, Karnataka RERA). Cross-check project completion timelines, sanctioned floor plans, and promoter litigation history.
+
+### 2. Title Deed & 30-Year Search Report
+Ensure the seller or promoter holds clear, marketable title free from family inheritance disputes or mortgaged encumbrances. Insist on a registered title certificate verified by an independent advocate.
+
+### 3. Encumbrance Certificate (EC)
+Obtain the EC from the sub-registrar office covering at least 15–30 years. It proves that the property is free from legal dues, bank hypothecations, or unpaid municipal taxes.
+
+### 4. Occupancy Certificate (OC) & Completion Certificate (CC)
+Never take possession without an official OC issued by local civic authorities (e.g., MCD, BBMP, BMC, DTCP). Handover without OC is legally unauthorized and may result in disconnected electricity or water utilities.`,
     category: 'Legal Guide',
     readTime: '8 min read',
     date: 'Aug 14, 2026',
-    author: 'Adv. Meera Chawla (Real Estate Law)',
-    image: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80'
+    authorId: 'team-editor-1',
+    authorName: 'Adv. Meera Chawla',
+    authorRole: 'Senior Property Advocate',
+    coverImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80',
+    status: 'published',
+    seo: {
+      focusKeyword: 'rera documents checklist home buyer india',
+      metaTitle: 'RERA Checklist: 7 Legal Documents Every Buyer Must Check | PropertyLelo',
+      metaDescription: 'Essential legal guide for Indian homebuyers: How to verify RERA ID, Encumbrance Certificate, Title Deed, and Occupancy Certificate.',
+      canonicalUrl: 'https://propertylelo.com/insights/rera-checklist-7-legal-documents-homebuyers',
+      ogTitle: 'RERA Legal Checklist for Homebuyers in India',
+      ogDescription: 'Verify these 7 critical documents before putting down token money on an apartment or villa in India.',
+      ogImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80',
+      robotsIndex: true,
+      robotsFollow: true,
+      schemaType: 'Article'
+    }
   },
   {
-    id: 'art-3',
+    id: 'blog-3',
     title: 'Home Loan Tax Exemptions Under Section 24(b) & 80C in Union Budget 2026',
+    slug: 'home-loan-tax-exemptions-section-24b-80c-2026',
     excerpt: 'Comprehensive guide to maximizing tax deductions on principal repayments, interest subsidies, and joint home ownership strategies.',
+    content: `## How to Save Maximum Tax on Your Home Loan in FY 2026-27
+
+For salaried and business professionals in India, a home loan provides substantial tax relief under both the Old and New Tax Regimes when planned smartly.
+
+### 1. Section 24(b): Deduction on Home Loan Interest
+You can claim up to ₹2,00,000 per financial year as a deduction on interest paid for a self-occupied property. For investment properties, the interest deduction can be claimed up to the actual interest paid against taxable income.
+
+### 2. Section 80C: Principal Repayment Relief
+Principal repayment, stamp duty charges, and registration fees paid during the year qualify under the overall ₹1,50,000 limit of Section 80C.
+
+### 3. Joint Home Loan Strategy (Double Benefits)
+If a married couple purchases property jointly and both are co-borrowers, both partners can independently claim up to ₹2 Lakh interest (₹4 Lakh total) and ₹1.5 Lakh principal (₹3 Lakh total), generating up to ₹7,00,000 in combined tax deductions!`,
     category: 'Tax & Finance',
     readTime: '5 min read',
     date: 'Aug 09, 2026',
-    author: 'Kunal Joshi (Chartered Accountant)',
-    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80'
+    authorId: 'admin-shivam-9063',
+    authorName: 'Kunal Joshi',
+    authorRole: 'Chartered Accountant (CA)',
+    coverImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
+    status: 'published',
+    seo: {
+      focusKeyword: 'home loan tax exemption section 24b 80c 2026',
+      metaTitle: 'Home Loan Tax Exemptions Guide 2026: Section 24(b) & 80C | PropertyLelo',
+      metaDescription: 'Maximize tax savings on home loan interest and principal repayments in Union Budget 2026. Joint loan strategies explained by CA experts.',
+      canonicalUrl: 'https://propertylelo.com/insights/home-loan-tax-exemptions-section-24b-80c-2026',
+      ogTitle: 'Home Loan Tax Benefits & Exemption Rules (2026)',
+      ogDescription: 'Learn how to claim up to ₹7 Lakhs in joint tax deductions on your home loan under current income tax slabs.',
+      ogImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
+      robotsIndex: true,
+      robotsFollow: true,
+      schemaType: 'Article'
+    }
   }
 ];
+
+export const ARTICLES_DATA: Article[] = BLOG_ARTICLES_DATA.map(b => ({
+  id: b.id,
+  title: b.title,
+  excerpt: b.excerpt,
+  category: b.category,
+  readTime: b.readTime,
+  date: b.date,
+  author: b.authorName,
+  image: b.coverImage
+}));
 
 export const CITY_PRICE_TRENDS = [
   { year: '2020', 'Delhi NCR': 6200, Mumbai: 18500, Bangalore: 5400, Pune: 4900, Hyderabad: 4800 },

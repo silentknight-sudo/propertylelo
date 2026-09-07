@@ -17,11 +17,20 @@ import {
 import { Property, NewProject } from '../types/property';
 
 // 1. SCHEDULE SITE VISIT MODAL
+export interface VisitDetails {
+  name: string;
+  phone: string;
+  date: string;
+  timeSlot: string;
+  visitType: 'Physical' | 'Video Call';
+  cabAssistance: boolean;
+}
+
 interface ScheduleVisitModalProps {
   property: Property | null;
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (msg: string) => void;
+  onSuccess: (msg: string, details: VisitDetails) => void;
 }
 
 export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({
@@ -42,7 +51,10 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone || !date) return;
-    onSuccess(`Site visit for "${property.title}" scheduled for ${date} (${timeSlot}). Free cab details sent via SMS!`);
+    onSuccess(
+      `Site visit for "${property.title}" scheduled for ${date} (${timeSlot}). Free cab details sent via SMS!`,
+      { name, phone, date, timeSlot, visitType, cabAssistance }
+    );
     onClose();
   };
 
@@ -177,11 +189,17 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({
 };
 
 // 2. CONTACT OWNER / BUILDER MODAL
+export interface ContactDetails {
+  name: string;
+  phone: string;
+  message: string;
+}
+
 interface ContactOwnerModalProps {
   property: Property | null;
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (msg: string) => void;
+  onSuccess: (msg: string, details: ContactDetails) => void;
 }
 
 export const ContactOwnerModal: React.FC<ContactOwnerModalProps> = ({
@@ -201,7 +219,10 @@ export const ContactOwnerModal: React.FC<ContactOwnerModalProps> = ({
     e.preventDefault();
     if (!name || !phone) return;
     setShowDirectContact(true);
-    onSuccess(`Contact request sent! You can now call ${property.posterName} directly.`);
+    onSuccess(
+      `Contact request sent! You can now call ${property.posterName} directly.`,
+      { name, phone, message }
+    );
   };
 
   return (
@@ -310,11 +331,17 @@ export const ContactOwnerModal: React.FC<ContactOwnerModalProps> = ({
 };
 
 // 3. VIP NEW PROJECT ENQUIRY MODAL
+export interface VipEnquiryDetails {
+  name: string;
+  phone: string;
+  budget: string;
+}
+
 interface VipProjectModalProps {
   project: NewProject | null;
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (msg: string) => void;
+  onSuccess: (msg: string, details: VipEnquiryDetails) => void;
 }
 
 export const VipProjectModal: React.FC<VipProjectModalProps> = ({
@@ -332,7 +359,10 @@ export const VipProjectModal: React.FC<VipProjectModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) return;
-    onSuccess(`VIP Callback registered for ${project.name}! Relationship manager will call in 15 mins.`);
+    onSuccess(
+      `VIP Callback registered for ${project.name}! Relationship manager will call in 15 mins.`,
+      { name, phone, budget }
+    );
     onClose();
   };
 

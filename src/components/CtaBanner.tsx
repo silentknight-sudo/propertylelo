@@ -20,7 +20,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onOpenPostProperty }) => {
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-orange-300 text-xs font-bold uppercase tracking-wider border border-white/20">
                 <Zap className="w-3.5 h-3.5 text-[#FF6B35]" />
-                Sell / Rent 2x Faster
+                Sell Properties 2x Faster
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight">
@@ -31,7 +31,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onOpenPostProperty }) => {
               </h2>
 
               <p className="text-blue-100/90 text-sm sm:text-base max-w-2xl leading-relaxed">
-                Reach over 1 Crore active verified buyers and tenants every month. Zero commission, instant WhatsApp lead alerts, and dedicated relationship manager assistance.
+                Reach over 1 Crore active verified buyers and investors every month. Zero commission, instant WhatsApp lead alerts, and dedicated relationship manager assistance.
               </p>
 
               {/* 3 Value bullets */}

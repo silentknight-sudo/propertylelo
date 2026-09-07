@@ -19,12 +19,14 @@ interface FooterProps {
   onSelectCity: (city: string) => void;
   onOpenEmi: () => void;
   onOpenPostProperty: () => void;
+  onOpenAdmin?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onSelectCity,
   onOpenEmi,
-  onOpenPostProperty
+  onOpenPostProperty,
+  onOpenAdmin
 }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -172,11 +174,6 @@ export const Footer: React.FC<FooterProps> = ({
                   Privacy Policy & GDPR
                 </a>
               </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Careers (We are hiring!)
-                </a>
-              </li>
             </ul>
           </div>
         </div>
@@ -188,14 +185,16 @@ export const Footer: React.FC<FooterProps> = ({
             Disclaimer: PropertyLelo is an online marketplace facilitating direct connections between buyers, sellers, and certified builders. All property data is verified via public state RERA portals.
           </p>
 
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors cursor-pointer"
-          >
-            <span>Back to Top</span>
-            <ArrowUp className="w-4 h-4 text-[#FF6B35]" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors cursor-pointer"
+            >
+              <span>Back to Top</span>
+              <ArrowUp className="w-4 h-4 text-[#FF6B35]" />
+            </button>
+          </div>
         </div>
       </div>
     </footer>

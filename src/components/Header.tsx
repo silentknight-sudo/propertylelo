@@ -12,10 +12,11 @@ import {
   PhoneCall,
   Search,
   MapPin,
+  ShieldCheck,
   ChevronDown
 } from 'lucide-react';
 import { Logo } from './Logo';
-import { ListingCategory } from '../types/property';
+import { ListingCategory, CmsSettings } from '../types/property';
 
 interface HeaderProps {
   activeCategory: ListingCategory;
@@ -27,6 +28,8 @@ interface HeaderProps {
   onOpenEmiCalculator: () => void;
   selectedCity: string;
   onSelectCity: (city: string) => void;
+  announcementBar?: CmsSettings['announcementBar'];
+  onOpenAdmin?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -38,7 +41,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAuth,
   onOpenEmiCalculator,
   selectedCity,
-  onSelectCity
+  onSelectCity,
+  announcementBar,
+  onOpenAdmin
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -54,10 +59,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems: { label: string; category?: ListingCategory; href?: string; action?: () => void }[] = [
     { label: 'Buy', category: 'Buy' },
-    { label: 'Rent', category: 'Rent' },
-    { label: 'Sell', action: onOpenPostProperty },
-    { label: 'New Projects', category: 'New Projects' },
     { label: 'Commercial', category: 'Commercial' },
+    { label: 'New Projects', category: 'New Projects' },
+    { label: 'Plots', category: 'Plot' },
+    { label: 'Sell', action: onOpenPostProperty },
     { label: 'Home Loans', action: onOpenEmiCalculator },
     { label: 'Insights', href: '#insights' }
   ];
@@ -81,9 +86,33 @@ export const Header: React.FC<HeaderProps> = ({
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? 'bg-white/95 backdrop-blur-md shadow-md py-2.5 border-b border-slate-100'
-          : 'bg-white py-4 border-b border-slate-100/80 shadow-xs'
+          : 'bg-white py-3.5 border-b border-slate-100/80 shadow-xs'
       }`}
     >
+      {/* Dynamic Top Announcement Ticker (from Admin CMS settings) */}
+      {announcementBar && announcementBar.enabled && (
+        <div className="bg-[#002869] text-white py-1.5 px-4 text-xs font-medium border-b border-blue-900/40">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 overflow-hidden truncate">
+              {announcementBar.badge && (
+                <span className="px-2 py-0.5 rounded-full bg-[#FF6B35] text-[10px] font-extrabold uppercase tracking-wider text-white shrink-0">
+                  {announcementBar.badge}
+                </span>
+              )}
+              <span className="truncate">{announcementBar.text}</span>
+            </div>
+            {announcementBar.linkText && (
+              <a
+                href={announcementBar.linkUrl || '#'}
+                className="shrink-0 text-[#FF6B35] hover:text-white font-bold text-xs underline transition-colors"
+              >
+                {announcementBar.linkText} →
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
           {/* Left: Brand Logo & Quick City Switcher */}

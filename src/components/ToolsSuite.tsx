@@ -33,7 +33,7 @@ interface ToolsSuiteProps {
 }
 
 export const ToolsSuite: React.FC<ToolsSuiteProps> = ({ onApplyLoan }) => {
-  const [activeToolTab, setActiveToolTab] = useState<'emi' | 'trends' | 'converter' | 'rent-vs-buy'>('emi');
+  const [activeToolTab, setActiveToolTab] = useState<'emi' | 'trends' | 'converter'>('emi');
 
   // --- 1. EMI Calculator State ---
   const [loanAmount, setLoanAmount] = useState<number>(5000000); // 50 Lakhs

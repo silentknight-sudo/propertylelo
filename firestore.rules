@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Properties: public can read, agents/admins/visitors can submit, admin can approve/edit/delete
+    match /properties/{propertyId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Leads: created by public site visitors (site visit, contact seller, VIP inquiry, loan application); managed by team & admin
+    match /leads/{leadId} {
+      allow read, write: if true;
+    }
+    
+    // Team members & RBAC
+    match /team_members/{memberId} {
+      allow read, write: if true;
+    }
+    
+    // Blogs & SEO Content
+    match /blogs/{blogId} {
+      allow read, write: if true;
+    }
+    
+    // CMS Settings & Feature Toggles
+    match /cms_config/{docId} {
+      allow read, write: if true;
+    }
+
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

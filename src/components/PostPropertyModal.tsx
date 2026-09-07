@@ -88,9 +88,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
 
     // Calculate formatted price
     let formattedPrice = '';
-    if (category === 'Rent' || category === 'PG-Coliving') {
-      formattedPrice = `₹${price.toLocaleString('en-IN')}/mo`;
-    } else if (price >= 10000000) {
+    if (price >= 10000000) {
       formattedPrice = `₹${(price / 10000000).toFixed(2)} Cr`;
     } else {
       formattedPrice = `₹${(price / 100000).toFixed(0)} Lakh`;
@@ -229,7 +227,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                 <div>
                   <label className="block font-bold text-slate-700 mb-2">I want to:</label>
                   <div className="grid grid-cols-3 gap-2">
-                    {(['Buy', 'Rent', 'Commercial'] as ListingCategory[]).map((cat) => (
+                    {(['Buy', 'Commercial', 'Plot'] as ListingCategory[]).map((cat) => (
                       <button
                         key={cat}
                         type="button"
@@ -240,7 +238,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                             : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
-                        {cat === 'Buy' ? 'Sell Property' : cat === 'Rent' ? 'Rent Out' : 'Commercial'}
+                        {cat === 'Buy' ? 'Sell Residential' : cat === 'Commercial' ? 'Sell Commercial' : 'Sell Plot / Land'}
                       </button>
                     ))}
                   </div>
@@ -370,7 +368,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                     />
                   </div>
                   <span className="text-[11px] text-[#FF6B35] font-semibold mt-1 block">
-                    {category === 'Rent' ? `₹${price.toLocaleString('en-IN')}/month` : `Approx ₹${(price / 100000).toFixed(1)} Lakh`}
+                    {price >= 10000000 ? `Approx ₹${(price / 10000000).toFixed(2)} Cr` : `Approx ₹${(price / 100000).toFixed(1)} Lakh`}
                   </span>
                 </div>
 

@@ -85,11 +85,14 @@ export const PropertyGrid: React.FC<PropertyGridProps> = ({
   const filteredProperties = useMemo(() => {
     return properties
       .filter((p) => {
+        // Exclude any legacy rent/pg listings
+        if ((p.category as string) === 'Rent' || (p.category as string) === 'PG-Coliving') return false;
+
         // Category check
-        if (activeCategory === 'Rent' && p.category !== 'Rent' && p.category !== 'PG-Coliving') return false;
         if (activeCategory === 'Buy' && p.category !== 'Buy') return false;
         if (activeCategory === 'Commercial' && p.category !== 'Commercial') return false;
-        if (activeCategory === 'PG-Coliving' && p.category !== 'PG-Coliving') return false;
+        if (activeCategory === 'New Projects' && p.category !== 'New Projects') return false;
+        if (activeCategory === 'Plot' && p.category !== 'Plot') return false;
 
         // City check
         if (selectedCity && selectedCity !== 'All' && !p.city.toLowerCase().includes(selectedCity.toLowerCase()) && !p.locality.toLowerCase().includes(selectedCity.toLowerCase())) {
@@ -186,7 +189,7 @@ export const PropertyGrid: React.FC<PropertyGridProps> = ({
               Verified Inventory
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-[#002869] font-heading tracking-tight">
-              Featured Properties for {activeCategory === 'Rent' ? 'Rent' : 'Sale'}
+              Featured Properties for Sale & Investment
             </h2>
             <p className="mt-1 text-sm text-slate-600">
               {selectedCity ? `Showing verified listings in ${selectedCity}` : 'Handpicked residential & commercial spaces across major metro corridors'}
@@ -195,7 +198,7 @@ export const PropertyGrid: React.FC<PropertyGridProps> = ({
 
           {/* Category Switcher Pills */}
           <div className="mt-4 md:mt-0 flex items-center gap-1.5 p-1 bg-slate-200/70 rounded-xl overflow-x-auto no-scrollbar">
-            {(['Buy', 'Rent', 'Commercial', 'PG-Coliving'] as ListingCategory[]).map((cat) => (
+            {(['Buy', 'Commercial', 'New Projects', 'Plot'] as ListingCategory[]).map((cat) => (
               <button
                 key={cat}
                 type="button"

@@ -55,10 +55,9 @@ export const Hero: React.FC<HeroProps> = ({
 
   const searchCategories: ListingCategory[] = [
     'Buy',
-    'Rent',
     'Commercial',
     'New Projects',
-    'PG-Coliving'
+    'Plot'
   ];
 
   const popularCities = [
@@ -96,18 +95,7 @@ export const Hero: React.FC<HeroProps> = ({
     'Above ₹5 Cr'
   ];
 
-  const budgetOptionsRent = [
-    'Any Budget',
-    'Under ₹15,000/mo',
-    '₹15,000 - ₹30,000/mo',
-    '₹30,000 - ₹60,000/mo',
-    '₹60,000 - ₹1.2 Lakh/mo',
-    'Above ₹1.2 Lakh/mo'
-  ];
-
-  const activeBudgetOptions = activeCategory === 'Rent' || activeCategory === 'PG-Coliving'
-    ? budgetOptionsRent
-    : budgetOptionsBuy;
+  const activeBudgetOptions = budgetOptionsBuy;
 
   const handleExecuteSearch = () => {
     onSearch({
