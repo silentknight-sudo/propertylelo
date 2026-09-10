@@ -21,6 +21,7 @@ import {
 import { SavedPropertiesDrawer } from './components/SavedPropertiesDrawer';
 import { AuthModal } from './components/AuthModal';
 import { Toast } from './components/Toast';
+import { AuthProvider } from './context/AuthContext';
 
 // Admin & Team RBAC System
 import { AdminPortal } from './components/admin/AdminPortal';
@@ -62,7 +63,7 @@ import {
   LeadStatus 
 } from './types/property';
 
-export function App() {
+function MainApp() {
   // --- Routing & Admin View State ---
   const [isAdminView, setIsAdminView] = useState<boolean>(() => {
     return window.location.hash.includes('admin') || 
@@ -729,6 +730,14 @@ export function App() {
       {/* Global Action Toast Notification */}
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }
 

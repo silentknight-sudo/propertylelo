@@ -26,6 +26,9 @@ import {
   PossessionStatus 
 } from '../../types/property';
 import { ImageUploadField } from './ImageUploadField';
+import { CitySelector } from '../CitySelector';
+import { formatIndianCurrency } from '../../lib/cities';
+import { Sparkles, Check, DollarSign, Layers } from 'lucide-react';
 import { AdminBlogEditor } from './AdminBlogEditor';
 
 interface TeamAgentPortalProps {
@@ -123,6 +126,15 @@ export const TeamAgentPortal: React.FC<TeamAgentPortalProps> = ({
       city: propForm.city || 'Delhi NCR',
       state: propForm.state || 'India',
       pincode: propForm.pincode || '110001',
+      developerName: propForm.developerName || '',
+      priceRange: propForm.priceRange || '',
+      leaseGuarantee: propForm.leaseGuarantee || '',
+      totalLandArea: propForm.totalLandArea || '',
+      totalTowers: propForm.totalTowers || '',
+      totalUnits: propForm.totalUnits || '',
+      possessionDate: propForm.possessionDate || '',
+      brochureUrl: propForm.brochureUrl || '',
+      highlights: propForm.highlights || [],
       images: propForm.images && propForm.images.length > 0 ? propForm.images : ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80'],
       verified: false,
       reraId: propForm.reraId || 'SUBMITTED-AGENT-REVIEW',
@@ -530,116 +542,264 @@ export const TeamAgentPortal: React.FC<TeamAgentPortalProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handlePropertySubmit} className="space-y-3 text-xs overflow-y-auto flex-1 pr-1">
+            <form onSubmit={handlePropertySubmit} className="space-y-4 text-xs overflow-y-auto flex-1 pr-1">
+              {/* Quick Auto-Fill Title Generator */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Property Title *</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-bold text-slate-700">Property Title *</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const bhkText = propForm.type === 'Plot' || propForm.type === 'Commercial Office' ? '' : `${propForm.bhk || 3} BHK `;
+                      const loc = propForm.locality ? propForm.locality : 'Prime Location';
+                      const cit = propForm.city || currentUser?.assignedCity || 'Delhi NCR';
+                      const autoTitle = `${bhkText}Premium ${propForm.type || 'Apartment'} in ${loc}, ${cit}`;
+                      setPropForm(prev => ({ ...prev, title: autoTitle }));
+                    }}
+                    className="text-[11px] font-bold text-[#FF6B35] hover:text-[#E85520] flex items-center gap-1 cursor-pointer"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Auto-Suggest Title</span>
+                  </button>
+                </div>
                 <input
                   type="text"
                   required
                   value={propForm.title}
                   onChange={(e) => setPropForm({ ...propForm, title: e.target.value })}
-                  placeholder="e.g. 3 BHK Luxury Apartment in Godrej Woods"
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold focus:ring-2 focus:ring-[#002869] focus:outline-none"
+                  placeholder="e.g. 3 BHK Luxury Apartment in Godrej Woods, Sector 43"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869] focus:outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              {/* Category and Property Type */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Price in INR (numeric) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={propForm.price}
-                    onChange={(e) => setPropForm({ ...propForm, price: Number(e.target.value) })}
-                    placeholder="12500000"
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
-                  />
+                  <label className="block font-bold text-slate-700 mb-1">Listing Type *</label>
+                  <select
+                    value={propForm.category || 'Buy'}
+                    onChange={(e) => setPropForm({ ...propForm, category: e.target.value as ListingCategory })}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869]"
+                  >
+                    <option value="Buy">For Sale / Buy</option>
+                    <option value="Commercial">Commercial Property</option>
+                  </select>
                 </div>
+
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Super Area (Sq.Ft) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={propForm.area}
-                    onChange={(e) => setPropForm({ ...propForm, area: Number(e.target.value) })}
-                    placeholder="1650"
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
-                  />
+                  <label className="block font-bold text-slate-700 mb-1">Property Type *</label>
+                  <select
+                    value={propForm.type || 'Apartment'}
+                    onChange={(e) => setPropForm({ ...propForm, type: e.target.value as PropertyType })}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869]"
+                  >
+                    <option value="Apartment">Apartment / High-rise Flat</option>
+                    <option value="Independent House">Independent House / Villa</option>
+                    <option value="Penthouse">Penthouse</option>
+                    <option value="Plot">Residential Plot / Land</option>
+                    <option value="Commercial Office">Commercial Office</option>
+                  </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              {/* City Selection (Supports Any City + Adding New Cities!) */}
+              <div className="bg-slate-50/80 p-3 rounded-2xl border border-slate-200/80 space-y-3">
+                <CitySelector
+                  value={propForm.city || currentUser.assignedCity || 'Delhi NCR'}
+                  onChange={(newCity) => setPropForm({ ...propForm, city: newCity })}
+                  label="Target City / Territory *"
+                  helperText="Choose your assigned region or any city in India. Click '+ Add New City' to list in unlisted markets."
+                />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Locality / Sector *</label>
+                    <input
+                      type="text"
+                      required
+                      value={propForm.locality}
+                      onChange={(e) => setPropForm({ ...propForm, locality: e.target.value })}
+                      placeholder="e.g. Sector 150, Golf Course Ext Road"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Pincode</label>
+                    <input
+                      type="text"
+                      value={propForm.pincode || '110001'}
+                      onChange={(e) => setPropForm({ ...propForm, pincode: e.target.value })}
+                      placeholder="e.g. 201310"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing with Live Currency Preview & Presets */}
+              <div className="bg-orange-50/40 p-3 rounded-2xl border border-orange-200/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-800">
+                    Total Price in INR *
+                  </label>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#002869] text-white font-extrabold text-xs">
+                    {formatIndianCurrency(Number(propForm.price) || 0)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <input
+                      type="number"
+                      required
+                      min={100000}
+                      step={50000}
+                      value={propForm.price || ''}
+                      onChange={(e) => setPropForm({ ...propForm, price: Number(e.target.value) })}
+                      placeholder="e.g. 12500000"
+                      className="w-full p-2 bg-white border border-orange-200 rounded-xl font-semibold text-slate-900 focus:ring-2 focus:ring-[#FF6B35]"
+                    />
+                    {/* Quick Presets */}
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      <span className="text-[10px] text-slate-500 font-bold">Quick:</span>
+                      {[
+                        { label: '₹65 L', val: 6500000 },
+                        { label: '₹95 L', val: 9500000 },
+                        { label: '₹1.5 Cr', val: 15000000 },
+                        { label: '₹2.5 Cr', val: 25000000 },
+                        { label: '₹4.0 Cr', val: 40000000 },
+                      ].map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => setPropForm({ ...propForm, price: preset.val })}
+                          className="px-1.5 py-0.5 rounded bg-white hover:bg-orange-100 text-slate-700 border border-orange-200 text-[10px] font-bold cursor-pointer transition-colors"
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Super Area (Sq.Ft) *</label>
+                    <input
+                      type="number"
+                      required
+                      min={100}
+                      value={propForm.area || ''}
+                      onChange={(e) => setPropForm({ ...propForm, area: Number(e.target.value) })}
+                      placeholder="e.g. 1650"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold text-slate-800"
+                    />
+                    {Number(propForm.price) > 0 && Number(propForm.area) > 0 && (
+                      <p className="text-[11px] text-[#002869] font-bold mt-1">
+                        ≈ ₹{Math.round(Number(propForm.price) / Number(propForm.area)).toLocaleString('en-IN')}/sq.ft
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Specifications: BHK, Furnishing, Possession */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">BHK *</label>
+                  <label className="block font-bold text-slate-700 mb-1">Bedrooms / BHK *</label>
                   <select
                     value={propForm.bhk}
                     onChange={(e) => setPropForm({ ...propForm, bhk: Number(e.target.value) })}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800"
                   >
                     <option value={1}>1 BHK</option>
                     <option value={2}>2 BHK</option>
                     <option value={3}>3 BHK</option>
                     <option value={4}>4 BHK</option>
-                    <option value={5}>5+ BHK</option>
+                    <option value={5}>5+ BHK / Penthouse</option>
                   </select>
                 </div>
+
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">City Territory</label>
-                  <input
-                    type="text"
-                    disabled
-                    value={currentUser.assignedCity || 'Delhi NCR'}
-                    className="w-full p-2 bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-500"
-                  />
+                  <label className="block font-bold text-slate-700 mb-1">Furnishing</label>
+                  <select
+                    value={propForm.furnishing || 'Semi-Furnished'}
+                    onChange={(e) => setPropForm({ ...propForm, furnishing: e.target.value as FurnishingStatus })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800"
+                  >
+                    <option value="Fully Furnished">Fully Furnished</option>
+                    <option value="Semi-Furnished">Semi-Furnished</option>
+                    <option value="Unfurnished">Unfurnished</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Possession</label>
+                  <select
+                    value={propForm.possession || 'Ready to Move'}
+                    onChange={(e) => setPropForm({ ...propForm, possession: e.target.value as PossessionStatus })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800"
+                  >
+                    <option value="Ready to Move">Ready to Move</option>
+                    <option value="Under Construction">Under Construction</option>
+                  </select>
                 </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Locality / Sector *</label>
-                <input
-                  type="text"
-                  required
-                  value={propForm.locality}
-                  onChange={(e) => setPropForm({ ...propForm, locality: e.target.value })}
-                  placeholder="e.g. Sector 43, Golf Course Road"
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
-                />
+              {/* RERA and Facing */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">RERA Registration ID</label>
+                  <input
+                    type="text"
+                    value={propForm.reraId || ''}
+                    onChange={(e) => setPropForm({ ...propForm, reraId: e.target.value })}
+                    placeholder="e.g. UPRERAAGT12456"
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Facing Direction</label>
+                  <select
+                    value={propForm.facing || 'North-East'}
+                    onChange={(e) => setPropForm({ ...propForm, facing: e.target.value })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800"
+                  >
+                    <option value="North-East">North-East (Vastu Compliant)</option>
+                    <option value="East">East Facing</option>
+                    <option value="North">North Facing</option>
+                    <option value="West">West Facing</option>
+                    <option value="South">South Facing</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">RERA Registration ID</label>
-                <input
-                  type="text"
-                  value={propForm.reraId}
-                  onChange={(e) => setPropForm({ ...propForm, reraId: e.target.value })}
-                  placeholder="e.g. HRERA-PKL-GGM-..."
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
-                />
-              </div>
-
+              {/* Image Upload Component */}
               <div>
                 <ImageUploadField
-                  label="Property Photo"
+                  label="Primary Property Photo *"
                   value={propForm.images?.[0] || ''}
                   onChange={(newUrl) => setPropForm({ ...propForm, images: [newUrl] })}
                   placeholder="https://images.unsplash.com/..."
-                  helperText="Upload a photo from your computer or phone, or paste an image URL."
+                  helperText="Upload a photo from your computer/phone or select a curated architectural preset."
                   required
                 />
               </div>
 
+              {/* Description */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Detailed Description</label>
+                <label className="block font-bold text-slate-700 mb-1">Detailed Highlights & Description</label>
                 <textarea
                   rows={2}
                   value={propForm.description}
                   onChange={(e) => setPropForm({ ...propForm, description: e.target.value })}
-                  placeholder="Key specs, floor position, facing, club features..."
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  placeholder="Mention floor height, tower view, builder reputation, club amenities, metro proximity..."
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              {/* Submit Buttons */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2 sticky bottom-0 bg-white py-2">
                 <button
                   type="button"
                   onClick={() => setIsSubmitPropModalOpen(false)}
@@ -649,9 +809,10 @@ export const TeamAgentPortal: React.FC<TeamAgentPortalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#002869] hover:bg-[#071f49] text-white font-bold transition-colors cursor-pointer shadow-md"
+                  className="px-5 py-2 rounded-xl bg-[#002869] hover:bg-[#071f49] text-white font-bold transition-colors cursor-pointer shadow-md flex items-center gap-1.5"
                 >
-                  Submit for Super Admin Review
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span>Submit for Super Admin Review</span>
                 </button>
               </div>
             </form>

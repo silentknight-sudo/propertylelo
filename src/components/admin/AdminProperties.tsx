@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { Property, PropertyType, ListingCategory, FurnishingStatus, PossessionStatus, ApprovalStatus } from '../../types/property';
 import { ImageUploadField } from './ImageUploadField';
+import { CitySelector } from '../CitySelector';
+import { formatIndianCurrency, getAllCities } from '../../lib/cities';
 
 interface AdminPropertiesProps {
   properties: Property[];
@@ -43,6 +45,17 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
   const [cityFilter, setCityFilter] = useState('all');
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+
+  // Dynamic list of available cities from properties + custom cities
+  const availableCities = React.useMemo(() => {
+    const list = getAllCities();
+    properties.forEach((p) => {
+      if (p.city && !list.includes(p.city)) {
+        list.push(p.city);
+      }
+    });
+    return Array.from(new Set(list));
+  }, [properties]);
 
   // New property form state
   const [formData, setFormData] = useState<Partial<Property>>({
@@ -130,6 +143,17 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
       city: formData.city || 'Delhi NCR',
       state: formData.state || 'India',
       pincode: formData.pincode || '110001',
+      developerName: formData.developerName || '',
+      priceRange: formData.priceRange || '',
+      leaseGuarantee: formData.leaseGuarantee || '',
+      totalLandArea: formData.totalLandArea || '',
+      totalTowers: formData.totalTowers || '',
+      totalUnits: formData.totalUnits || '',
+      possessionDate: formData.possessionDate || '',
+      brochureUrl: formData.brochureUrl || '',
+      projectArchitecture: formData.projectArchitecture || '',
+      aboutDeveloper: formData.aboutDeveloper || '',
+      highlights: formData.highlights || [],
       images: formData.images && formData.images.length > 0 
         ? formData.images 
         : ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80'],
@@ -264,13 +288,12 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
             onChange={(e) => setCityFilter(e.target.value)}
             className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-700 focus:ring-2 focus:ring-[#002869] focus:outline-none"
           >
-            <option value="all">All Cities</option>
-            <option value="Delhi NCR">Delhi NCR</option>
-            <option value="Mumbai">Mumbai</option>
-            <option value="Bangalore">Bangalore</option>
-            <option value="Pune">Pune</option>
-            <option value="Hyderabad">Hyderabad</option>
-            <option value="Chennai">Chennai</option>
+            <option value="all">All Cities ({properties.length})</option>
+            {availableCities.map((cityName) => (
+              <option key={cityName} value={cityName}>
+                {cityName}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -498,9 +521,14 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Price in INR (numeric) *</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Price in INR *</label>
+                    <span className="text-[11px] font-extrabold text-[#002869] bg-blue-50 px-2 py-0.5 rounded">
+                      {formatIndianCurrency(Number(formData.price) || 0)}
+                    </span>
+                  </div>
                   <input
                     type="number"
                     required
@@ -524,21 +552,12 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">City *</label>
-                  <select
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
-                  >
-                    <option value="Delhi NCR">Delhi NCR</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Bangalore">Bangalore</option>
-                    <option value="Pune">Pune</option>
-                    <option value="Hyderabad">Hyderabad</option>
-                    <option value="Chennai">Chennai</option>
-                    <option value="Kolkata">Kolkata</option>
-                    <option value="Ahmedabad">Ahmedabad</option>
-                  </select>
+                  <CitySelector
+                    value={formData.city || 'Delhi NCR'}
+                    onChange={(newCity) => setFormData({ ...formData, city: newCity })}
+                    label="City *"
+                    helperText="Select or click '+ Add New City'"
+                  />
                 </div>
               </div>
 
@@ -564,6 +583,92 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
                     placeholder="e.g. HRERA-PKL-GGM-1122"
                     className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
                   />
+                </div>
+              </div>
+
+              {/* Wealth Clinic Project Fields */}
+              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
+                <div className="text-[11px] font-bold text-[#002869] uppercase tracking-wider">
+                  Wealth Clinic Project Specifications
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Developer / Builder Name</label>
+                    <input
+                      type="text"
+                      value={formData.developerName || ''}
+                      onChange={(e) => setFormData({ ...formData, developerName: e.target.value })}
+                      placeholder="e.g. Wellgrow Infotech / Orion Group"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Price Range Display</label>
+                    <input
+                      type="text"
+                      value={formData.priceRange || ''}
+                      onChange={(e) => setFormData({ ...formData, priceRange: e.target.value })}
+                      placeholder="e.g. ₹82.80 Lakh - ₹2.50 Cr*"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Total Land Parcel</label>
+                    <input
+                      type="text"
+                      value={formData.totalLandArea || ''}
+                      onChange={(e) => setFormData({ ...formData, totalLandArea: e.target.value })}
+                      placeholder="e.g. 10 Acres"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Towers / Units</label>
+                    <input
+                      type="text"
+                      value={formData.totalTowers || ''}
+                      onChange={(e) => setFormData({ ...formData, totalTowers: e.target.value })}
+                      placeholder="e.g. 3 Towers (703 Units)"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Possession Date</label>
+                    <input
+                      type="text"
+                      value={formData.possessionDate || ''}
+                      onChange={(e) => setFormData({ ...formData, possessionDate: e.target.value })}
+                      placeholder="e.g. December 2026"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Lease Guarantee / Assured Returns</label>
+                    <input
+                      type="text"
+                      value={formData.leaseGuarantee || ''}
+                      onChange={(e) => setFormData({ ...formData, leaseGuarantee: e.target.value })}
+                      placeholder="e.g. 29-Year Lease Guarantee • 12% Assured Returns"
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Brochure PDF URL</label>
+                    <input
+                      type="url"
+                      value={formData.brochureUrl || ''}
+                      onChange={(e) => setFormData({ ...formData, brochureUrl: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full p-2 bg-white border border-slate-200 rounded-xl font-semibold"
+                    />
+                  </div>
                 </div>
               </div>
 

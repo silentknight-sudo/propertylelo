@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import { ListingCategory, PropertyType } from '../types/property';
+import { getAllCities } from '../lib/cities';
 
 interface HeroProps {
   activeCategory: ListingCategory;
@@ -60,18 +61,7 @@ export const Hero: React.FC<HeroProps> = ({
     'Plot'
   ];
 
-  const popularCities = [
-    'Delhi NCR',
-    'Mumbai',
-    'Bangalore',
-    'Pune',
-    'Hyderabad',
-    'Chennai',
-    'Kolkata',
-    'Ahmedabad',
-    'Gurgaon',
-    'Noida'
-  ];
+  const popularCities = getAllCities();
 
   const propertyTypes = [
     'All Types',

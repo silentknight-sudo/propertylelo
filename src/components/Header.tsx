@@ -13,10 +13,14 @@ import {
   Search,
   MapPin,
   ShieldCheck,
-  ChevronDown
+  ChevronDown,
+  LogOut,
+  Phone
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { ListingCategory, CmsSettings } from '../types/property';
+import { useAuth } from '../context/AuthContext';
+import { getAllCities } from '../lib/cities';
 
 interface HeaderProps {
   activeCategory: ListingCategory;
@@ -45,9 +49,11 @@ export const Header: React.FC<HeaderProps> = ({
   announcementBar,
   onOpenAdmin
 }) => {
+  const { currentUser, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,19 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
     { label: 'Insights', href: '#insights' }
   ];
 
-  const popularCities = [
-    'All Cities',
-    'Delhi NCR',
-    'Mumbai',
-    'Bangalore',
-    'Pune',
-    'Hyderabad',
-    'Chennai',
-    'Kolkata',
-    'Ahmedabad',
-    'Gurgaon',
-    'Noida'
-  ];
+  const popularCities = ['All Cities', ...getAllCities()];
 
   return (
     <header
@@ -241,15 +235,126 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* Login / User Account */}
-            <button
-              type="button"
-              onClick={onOpenAuth}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-[#002869] hover:bg-slate-100 transition-colors cursor-pointer"
-            >
-              <User className="w-4 h-4 text-slate-500" />
-              <span>Login</span>
-            </button>
+            {/* Login / User Account Dropdown */}
+            {currentUser ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="hidden sm:flex items-center gap-2 p-1.5 pr-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer"
+                >
+                  {currentUser.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt={currentUser.name}
+                      className="w-7 h-7 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-lg bg-[#002869] text-white flex items-center justify-center font-bold text-xs">
+                      {currentUser.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="max-w-[90px] truncate">{currentUser.name.split(' ')[0]}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </button>
+
+                {/* Dropdown Menu */}
+                {userMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-3 z-50 animate-in fade-in">
+                      <div className="pb-3 border-b border-slate-100">
+                        <div className="flex items-center gap-2.5">
+                          {currentUser.photoURL ? (
+                            <img
+                              src={currentUser.photoURL}
+                              alt={currentUser.name}
+                              className="w-9 h-9 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-[#002869] text-white flex items-center justify-center font-bold text-sm">
+                              {currentUser.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <p className="font-bold text-slate-900 text-xs truncate">
+                              {currentUser.name}
+                            </p>
+                            <p className="text-[11px] text-slate-500 truncate">
+                              {currentUser.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Phone Number Display */}
+                        {currentUser.phone && (
+                          <div className="mt-2.5 flex items-center justify-between bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100 text-[11px]">
+                            <div className="flex items-center gap-1.5 text-slate-600 font-semibold truncate">
+                              <Phone className="w-3 h-3 text-[#002869]" />
+                              <span className="truncate">{currentUser.phone}</span>
+                            </div>
+                            <span className="text-[9px] font-extrabold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                              Verified
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="py-2 space-y-1 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            onOpenSavedDrawer();
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-[#002869] font-semibold text-left cursor-pointer"
+                        >
+                          <Heart className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Saved Properties ({savedCount})</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            onOpenPostProperty();
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-[#002869] font-semibold text-left cursor-pointer"
+                        >
+                          <PlusCircle className="w-3.5 h-3.5 text-[#FF6B35]" />
+                          <span>Post Free Property</span>
+                        </button>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await signOut();
+                            setUserMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-red-600 hover:bg-red-50 font-bold text-xs cursor-pointer transition-colors"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenAuth}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-[#002869] hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <User className="w-4 h-4 text-slate-500" />
+                <span>Login</span>
+              </button>
+            )}
 
             {/* Post Property FREE Button */}
             <motion.button
@@ -321,17 +426,62 @@ export const Header: React.FC<HeaderProps> = ({
               })}
 
               <div className="pt-4 border-t border-slate-100 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onOpenAuth();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-                >
-                  <User className="w-4 h-4 text-slate-600" />
-                  <span>Login / Register Account</span>
-                </button>
+                {currentUser ? (
+                  <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2.5">
+                    <div className="flex items-center gap-2.5">
+                      {currentUser.photoURL ? (
+                        <img
+                          src={currentUser.photoURL}
+                          alt={currentUser.name}
+                          className="w-9 h-9 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-[#002869] text-white flex items-center justify-center font-bold text-sm">
+                          {currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-slate-900 text-xs truncate">
+                          {currentUser.name}
+                        </p>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {currentUser.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {currentUser.phone && (
+                      <div className="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-xl border border-slate-100 text-xs">
+                        <span className="font-semibold text-slate-700">{currentUser.phone}</span>
+                        <span className="text-[10px] text-emerald-600 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded">Verified</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await signOut();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-50 text-red-600 font-bold text-xs hover:bg-red-100 cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onOpenAuth();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                  >
+                    <User className="w-4 h-4 text-slate-600" />
+                    <span>Sign In with Google</span>
+                  </button>
+                )}
                 
                 <button
                   type="button"

@@ -1,26 +1,36 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import confetti from 'canvas-confetti';
 import { 
   X, 
   Building2, 
   MapPin, 
-  IndianRupee, 
-  Check, 
-  PlusCircle, 
+  Upload, 
+  CheckCircle2, 
   Sparkles, 
   ArrowRight, 
   ArrowLeft,
-  Upload,
   ShieldCheck,
-  CheckCircle2
+  Award,
+  Layers,
+  FileText,
+  Clock
 } from 'lucide-react';
-import { Property, ListingCategory, PropertyType, PostedByType } from '../types/property';
+import { 
+  Property, 
+  ListingCategory, 
+  PropertyType, 
+  FurnishingStatus, 
+  PossessionStatus, 
+  PostedByType 
+} from '../types/property';
+import { CitySelector } from './CitySelector';
+import { ImageUploadField } from './admin/ImageUploadField';
+import confetti from 'canvas-confetti';
 
 interface PostPropertyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProperty: (newProp: Property) => void;
+  onAddProperty: (property: Property) => void;
   onNotify: (msg: string) => void;
 }
 
@@ -30,27 +40,53 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
   onAddProperty,
   onNotify
 }) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [generatedId, setGeneratedId] = useState<string>('');
+
+  // Step 1: Project / Property Basics
+  const [title, setTitle] = useState('');
+  const [developerName, setDeveloperName] = useState('');
   const [category, setCategory] = useState<ListingCategory>('Buy');
   const [propertyType, setPropertyType] = useState<PropertyType>('Apartment');
-  const [title, setTitle] = useState('');
+  const [postedBy, setPostedBy] = useState<PostedByType>('Owner');
+
+  // Step 2: Location & Project Scale
   const [city, setCity] = useState('Delhi NCR');
   const [locality, setLocality] = useState('');
-  const [bhk, setBhk] = useState(3);
-  const [area, setArea] = useState(1350);
-  const [price, setPrice] = useState(9500000);
-  const [furnishing, setFurnishing] = useState<'Furnished' | 'Semi-Furnished' | 'Unfurnished'>('Semi-Furnished');
-  const [postedBy, setPostedBy] = useState<PostedByType>('Owner');
-  const [posterName, setPosterName] = useState('');
-  const [posterPhone, setPosterPhone] = useState('');
+  const [bhk, setBhk] = useState<number>(3);
+  const [area, setArea] = useState<number>(1450);
+  const [price, setPrice] = useState<number>(12500000);
+  const [priceRange, setPriceRange] = useState('');
+  const [totalLandArea, setTotalLandArea] = useState('10 Acres');
+  const [totalTowers, setTotalTowers] = useState('3 Towers');
+  const [totalUnits, setTotalUnits] = useState('703 Units');
+  const [leaseGuarantee, setLeaseGuarantee] = useState('29-Year Lease Guarantee • 12% Assured Returns');
+
+  // Step 3: Project Highlights, Amenities, Media & Contact
+  const [reraId, setReraId] = useState('UPRERAPRJ960554');
+  const [possession, setPossession] = useState<PossessionStatus>('Under Construction');
+  const [possessionDate, setPossessionDate] = useState('December 2026');
+  const [highlightsInput, setHighlightsInput] = useState(
+    "India's 1st Freeport Outlet Mall, 3-Acre Courtyard with 5 Beaches, 12% Assured Returns, LEED Gold Rated Complex"
+  );
+  const [brochureUrl, setBrochureUrl] = useState('https://wealth-clinic.com/properties-in-noida/orion-one-32');
+  const [furnishing, setFurnishing] = useState<FurnishingStatus>('Semi-Furnished');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([
     'Clubhouse',
     'Swimming Pool',
     '24/7 Power Backup',
-    'Security CCTV'
+    'Security CCTV',
+    'Covered Car Parking'
   ]);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [generatedId, setGeneratedId] = useState('');
+  const [imageUrl, setImageUrl] = useState<string>(
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'
+  );
+  const [posterName, setPosterName] = useState('Authorized Listing Desk');
+  const [posterPhone, setPosterPhone] = useState('+91 98110 44210');
+  const [description, setDescription] = useState(
+    'Prime project with world-class amenities, premium layout design, and guaranteed appreciation.'
+  );
 
   if (!isOpen) return null;
 
@@ -64,7 +100,9 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
     'EV Charging Station',
     'Covered Car Parking',
     'Vastu Compliant',
-    'Tennis Court'
+    'Tennis Court',
+    'Food Court & Retail Promenade',
+    'High-Speed Elevators'
   ];
 
   const toggleAmenity = (amenity: string) => {
@@ -73,6 +111,17 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
     } else {
       setSelectedAmenities([...selectedAmenities, amenity]);
     }
+  };
+
+  const formatIndianCurrency = (num: number) => {
+    if (!num) return '₹0';
+    if (num >= 10000000) {
+      return `₹${(num / 10000000).toFixed(2)} Cr`;
+    }
+    if (num >= 100000) {
+      return `₹${(num / 100000).toFixed(2)} Lakh`;
+    }
+    return `₹${num.toLocaleString('en-IN')}`;
   };
 
   const handleFinish = (e: React.FormEvent) => {
@@ -94,40 +143,68 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
       formattedPrice = `₹${(price / 100000).toFixed(0)} Lakh`;
     }
 
+    // Split highlights by comma
+    const parsedHighlights = highlightsInput
+      ? highlightsInput.split(',').map((h) => h.trim()).filter(Boolean)
+      : [
+          `Prime location in ${locality}, ${city}`,
+          `RERA Approved Project (${reraId}) with transparent approvals`,
+          `Possession by ${possessionDate}`,
+          `Super Built-up Area: ${area} sq.ft with modern architecture`
+        ];
+
+    const projectTitle = title || (
+      developerName 
+        ? `${developerName} ${locality}` 
+        : `${bhk > 0 ? `${bhk} BHK ` : ''}${propertyType} in ${locality}`
+    );
+
     const newProperty: Property = {
       id: newId,
-      title: title || `${bhk} BHK Luxury ${propertyType} in ${locality}`,
-      tagline: 'Direct listing by ' + postedBy,
+      title: projectTitle,
+      developerName: developerName || 'Reputed Real Estate Group',
+      tagline: 'Verified Project • Zero Brokerage',
       type: propertyType,
       category: category,
       bhk: propertyType === 'Plot' || propertyType === 'Commercial Office' ? 0 : bhk,
       price: price,
       priceFormatted: formattedPrice,
+      priceRange: priceRange || `${formattedPrice} Onwards*`,
       pricePerSqft: Math.round(price / (area || 1000)),
       area: area || 1200,
+      totalLandArea: totalLandArea || '10 Acres',
+      totalTowers: totalTowers || '3 Towers',
+      totalUnits: totalUnits || '703 Units',
+      leaseGuarantee: leaseGuarantee,
+      reraId: reraId || 'UPRERAPRJ960554',
       locality: locality,
       city: city,
-      state: 'India',
-      pincode: '110001',
-      images: [
-        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80'
+      state: 'Uttar Pradesh',
+      pincode: '201310',
+      images: imageUrl ? [imageUrl] : [
+        'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'
       ],
+      brochureUrl: brochureUrl || 'https://wealth-clinic.com/properties-in-noida/orion-one-32',
+      highlights: parsedHighlights,
       verified: true,
       postedBy: postedBy,
       posterName: posterName,
       posterPhone: posterPhone,
       postedDate: 'Just now',
       furnishing: furnishing,
-      possession: 'Ready to Move',
+      possession: possession,
+      possessionDate: possessionDate,
+      projectStatus: possession,
+      projectArchitecture: 'European Contemporary • LEED Gold Complex',
       facing: 'North-East',
-      floor: 'Middle Floor',
+      floor: 'Middle / Upper Floors',
       bathrooms: bhk > 1 ? bhk : 1,
       balconies: bhk > 1 ? 2 : 1,
-      parking: '1 Covered Car Park',
+      parking: 'Covered Multi-Level Parking',
       amenities: selectedAmenities,
-      description: `Newly listed verified ${bhk} BHK ${propertyType} located at prime ${locality}, ${city}. Features prime connectivity, natural light, and premium fixtures.`,
-      featured: true
+      description: description || `Newly listed verified project ${projectTitle} located at prime ${locality}, ${city}. Features prime connectivity, natural light, and premium fixtures.`,
+      featured: true,
+      status: 'published'
     };
 
     onAddProperty(newProperty);
@@ -144,7 +221,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
       // Confetti fallback
     }
 
-    onNotify('🎉 Property published successfully on PropertyLelo!');
+    onNotify('🎉 Property published successfully in Wealth Clinic format!');
   };
 
   return (
@@ -160,7 +237,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+          className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -172,22 +249,22 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
             </div>
 
             <h3 className="text-2xl font-extrabold text-[#002869] font-heading">
-              Your Property is Live on PropertyLelo!
+              Your Property is Live!
             </h3>
 
             <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Your listing (ID: <span className="font-bold text-[#002869]">{generatedId}</span>) is now active and indexed for millions of potential buyers and tenants across India.
+              Your listing (ID: <span className="font-bold text-[#002869]">{generatedId}</span>) is now active with Wealth Clinic style specifications, project overview, configurations, and RERA verification.
             </p>
 
             <div className="bg-blue-50 rounded-2xl p-4 max-w-sm mx-auto text-xs text-[#002869] font-semibold border border-blue-200">
-              ⚡ Free RERA & title badge applied • 0% Brokerage activated
+              ⚡ RERA Verified • Zero Brokerage • Orion One 32 Format
             </div>
 
             <div className="pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-[#002869] text-white font-bold px-6 py-3 rounded-xl hover:bg-[#071f49] transition-colors"
+                className="bg-[#002869] text-white font-bold px-6 py-3 rounded-xl hover:bg-[#071f49] transition-colors cursor-pointer"
               >
                 View in Property Browser
               </button>
@@ -199,13 +276,13 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
             <div className="mb-6">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B35] text-xs font-bold uppercase mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
-                Zero Brokerage Listing
+                Wealth Clinic Project Format
               </div>
               <h3 className="text-2xl font-extrabold text-[#002869] font-heading">
-                Post Property for Free
+                List Verified Property / Project
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                Reach genuine verified buyers in under 2 minutes.
+                Reach genuine buyers & high-net-worth investors across India with rich project specs.
               </p>
 
               {/* Progress Steps */}
@@ -221,40 +298,74 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
               </div>
             </div>
 
-            {/* Step 1: Basic Type & Category */}
+            {/* Step 1: Project / Property Basics */}
             {step === 1 && (
               <div className="space-y-4 text-xs sm:text-sm">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-2">I want to:</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['Buy', 'Commercial', 'Plot'] as ListingCategory[]).map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setCategory(cat)}
-                        className={`py-2.5 px-3 rounded-xl font-bold border transition-all cursor-pointer ${
-                          category === cat
-                            ? 'bg-[#002869] text-white border-[#002869]'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                        }`}
-                      >
-                        {cat === 'Buy' ? 'Sell Residential' : cat === 'Commercial' ? 'Sell Commercial' : 'Sell Plot / Land'}
-                      </button>
-                    ))}
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Project / Property Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. Orion One 32 or Godrej Woods or DLF One Midtown"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-slate-900 focus:ring-2 focus:ring-[#002869]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Developer / Builder Name
+                    </label>
+                    <input
+                      type="text"
+                      value={developerName}
+                      onChange={(e) => setDeveloperName(e.target.value)}
+                      placeholder="e.g. Wellgrow Infotech / Orion Group"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Listing Category
+                    </label>
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value as ListingCategory)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800"
+                    >
+                      <option value="Commercial">Commercial Project / Retail</option>
+                      <option value="Buy">Residential Luxury Sale</option>
+                      <option value="New Projects">New Projects / Fresh Launch</option>
+                      <option value="Plot">Plot / Commercial Land</option>
+                    </select>
                   </div>
                 </div>
 
                 <div>
                   <label className="block font-bold text-slate-700 mb-2">Property Type:</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {(['Apartment', 'Villa', 'Independent House', 'Plot', 'Commercial Office', 'Studio Flat'] as PropertyType[]).map((type) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      'Commercial Office',
+                      'Retail Shop',
+                      'Food Court',
+                      'Apartment',
+                      'Villa',
+                      'Studio Flat',
+                      'Penthouse',
+                      'Plot'
+                    ].map((type) => (
                       <button
                         key={type}
                         type="button"
-                        onClick={() => setPropertyType(type)}
-                        className={`py-2.5 px-3 rounded-xl font-semibold border transition-all text-xs cursor-pointer ${
+                        onClick={() => setPropertyType(type as PropertyType)}
+                        className={`py-2 px-2.5 rounded-xl font-semibold border transition-all text-xs cursor-pointer ${
                           propertyType === type
-                            ? 'bg-blue-50 text-[#002869] border-[#002869] font-bold'
+                            ? 'bg-blue-50 text-[#002869] border-[#002869] font-bold shadow-xs'
                             : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
@@ -265,7 +376,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-2">You are the:</label>
+                  <label className="block font-bold text-slate-700 mb-2">You are listing as:</label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['Owner', 'Builder', 'Verified Agent'] as PostedByType[]).map((p) => (
                       <button
@@ -290,49 +401,79 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                     onClick={() => setStep(2)}
                     className="flex items-center gap-1.5 bg-[#002869] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#071f49] transition-colors cursor-pointer"
                   >
-                    <span>Next: Location Details</span>
+                    <span>Next: Location & Pricing</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Step 2: Location & Size */}
+            {/* Step 2: Location, Scale & Pricing */}
             {step === 2 && (
               <div className="space-y-4 text-xs sm:text-sm">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1.5">City *</label>
-                  <select
+                  <CitySelector
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869]"
-                  >
-                    {['Delhi NCR', 'Mumbai', 'Bangalore', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Gurgaon', 'Noida'].map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCity}
+                    label="City / Territory *"
+                    helperText="Select from top metro hubs or click '+ Add New City' to list in any city in India."
+                  />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1.5">Locality / Sector / Area *</label>
+                  <label className="block font-bold text-slate-700 mb-1.5">Locality / Sector / Address *</label>
                   <input
                     type="text"
                     required
                     value={locality}
                     onChange={(e) => setLocality(e.target.value)}
-                    placeholder="e.g. Sector 150 or Whitefield or Baner"
+                    placeholder="e.g. Sector 132, Noida Expressway"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869]"
                   />
                 </div>
 
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Land Parcel</label>
+                    <input
+                      type="text"
+                      value={totalLandArea}
+                      onChange={(e) => setTotalLandArea(e.target.value)}
+                      placeholder="e.g. 10 Acres"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-semibold text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Towers</label>
+                    <input
+                      type="text"
+                      value={totalTowers}
+                      onChange={(e) => setTotalTowers(e.target.value)}
+                      placeholder="e.g. 3 Towers"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-semibold text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Units</label>
+                    <input
+                      type="text"
+                      value={totalUnits}
+                      onChange={(e) => setTotalUnits(e.target.value)}
+                      placeholder="e.g. 703 Units"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-semibold text-slate-800"
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1.5">Bedrooms (BHK)</label>
+                    <label className="block font-bold text-slate-700 mb-1.5">Bedrooms / BHK</label>
                     <select
                       value={bhk}
                       onChange={(e) => setBhk(Number(e.target.value))}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800"
                     >
+                      <option value={0}>Commercial / Studio / Retail</option>
                       <option value={1}>1 BHK</option>
                       <option value={2}>2 BHK</option>
                       <option value={3}>3 BHK</option>
@@ -342,7 +483,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1.5">Built-up Area (Sq.Ft)</label>
+                    <label className="block font-bold text-slate-700 mb-1.5">Super Built-up Area (Sq.Ft)</label>
                     <input
                       type="number"
                       value={area}
@@ -353,30 +494,84 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1.5">
-                    Expected Price (₹ in INR) *
-                  </label>
-                  <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                {/* Price Box with presets */}
+                <div className="bg-orange-50/50 p-3.5 rounded-2xl border border-orange-200/70 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block font-bold text-slate-800">
+                      Starting Investment Price in INR *
+                    </label>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#002869] text-white font-extrabold text-xs">
+                      {formatIndianCurrency(price)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center bg-white border border-orange-200 rounded-xl px-3 py-2">
                     <span className="font-bold text-slate-500 mr-2">₹</span>
                     <input
                       type="number"
                       required
-                      value={price}
+                      min={100000}
+                      step={50000}
+                      value={price || ''}
                       onChange={(e) => setPrice(Number(e.target.value))}
-                      className="w-full bg-transparent font-bold text-slate-800 focus:outline-none"
+                      className="w-full bg-transparent font-bold text-slate-900 focus:outline-none"
                     />
                   </div>
-                  <span className="text-[11px] text-[#FF6B35] font-semibold mt-1 block">
-                    {price >= 10000000 ? `Approx ₹${(price / 10000000).toFixed(2)} Cr` : `Approx ₹${(price / 100000).toFixed(1)} Lakh`}
-                  </span>
+
+                  {/* Quick Presets */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] text-slate-500 font-bold">Presets:</span>
+                    {[
+                      { label: '₹82.8 L', val: 8280000 },
+                      { label: '₹1.2 Cr', val: 12000000 },
+                      { label: '₹1.8 Cr', val: 18000000 },
+                      { label: '₹2.5 Cr', val: 25000000 },
+                      { label: '₹4.5 Cr', val: 45000000 },
+                    ].map((p) => (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => setPrice(p.val)}
+                        className="px-2 py-0.5 rounded bg-white hover:bg-orange-100 text-slate-700 border border-orange-200 text-[10px] font-bold cursor-pointer transition-colors"
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Price Range Display
+                      </label>
+                      <input
+                        type="text"
+                        value={priceRange}
+                        onChange={(e) => setPriceRange(e.target.value)}
+                        placeholder="e.g. ₹82.80 Lakh - ₹2.50 Cr*"
+                        className="w-full bg-white border border-orange-200 rounded-lg p-1.5 text-xs font-semibold text-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Lease Guarantee / Returns
+                      </label>
+                      <input
+                        type="text"
+                        value={leaseGuarantee}
+                        onChange={(e) => setLeaseGuarantee(e.target.value)}
+                        placeholder="e.g. 29-Year Lease Guarantee • 12% Returns"
+                        className="w-full bg-white border border-orange-200 rounded-lg p-1.5 text-xs font-semibold text-slate-800"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-4 flex justify-between">
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="flex items-center gap-1.5 text-slate-600 px-4 py-2 rounded-xl font-bold hover:bg-slate-100"
+                    className="flex items-center gap-1.5 text-slate-600 px-4 py-2 rounded-xl font-bold hover:bg-slate-100 cursor-pointer"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Back</span>
@@ -384,18 +579,76 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setStep(3)}
-                    className="flex items-center gap-1.5 bg-[#002869] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#071f49] transition-colors"
+                    className="flex items-center gap-1.5 bg-[#002869] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#071f49] transition-colors cursor-pointer"
                   >
-                    <span>Next: Amenities & Contact</span>
+                    <span>Next: RERA, Photos & Contact</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Step 3: Amenities & Contact */}
+            {/* Step 3: RERA, Highlights, Media & Contact */}
             {step === 3 && (
               <form onSubmit={handleFinish} className="space-y-4 text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">RERA Number *</label>
+                    <input
+                      type="text"
+                      required
+                      value={reraId}
+                      onChange={(e) => setReraId(e.target.value)}
+                      placeholder="e.g. UPRERAPRJ960554"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-mono font-bold text-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Possession Status</label>
+                    <select
+                      value={possession}
+                      onChange={(e) => setPossession(e.target.value as PossessionStatus)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-semibold text-slate-800"
+                    >
+                      <option value="Under Construction">Under Construction</option>
+                      <option value="Ready to Move">Ready to Move</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Possession Date</label>
+                    <input
+                      type="text"
+                      value={possessionDate}
+                      onChange={(e) => setPossessionDate(e.target.value)}
+                      placeholder="e.g. December 2026"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-semibold text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Key Highlights & USPs (Comma separated)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={highlightsInput}
+                    onChange={(e) => setHighlightsInput(e.target.value)}
+                    placeholder="India's 1st Freeport Outlet Mall, 3-Acre Courtyard with 5 Beaches, 12% Assured Returns, LEED Gold Rated"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-medium text-slate-800 text-xs"
+                  />
+                </div>
+
+                <div>
+                  <ImageUploadField
+                    label="Project Cover / Elevation Photo"
+                    value={imageUrl}
+                    onChange={setImageUrl}
+                    placeholder="https://images.unsplash.com/..."
+                    helperText="Upload an elevation or facade photo, or choose from curated presets."
+                  />
+                </div>
+
                 <div>
                   <label className="block font-bold text-slate-700 mb-2">Select Key Amenities:</label>
                   <div className="flex flex-wrap gap-1.5">
@@ -408,63 +661,60 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                           onClick={() => toggleAmenity(a)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                             isSel
-                              ? 'bg-blue-50 text-[#002869] border border-[#002869] font-bold'
+                              ? 'bg-[#002869] text-white'
                               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                           }`}
                         >
-                          {a} {isSel && '✓'}
+                          {isSel ? '✓ ' : '+ '}
+                          {a}
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1.5">Your Full Name *</label>
+                    <label className="block font-bold text-slate-700 mb-1">Contact Name *</label>
                     <input
                       type="text"
                       required
                       value={posterName}
                       onChange={(e) => setPosterName(e.target.value)}
-                      placeholder="e.g. Alok Verma"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869]"
+                      placeholder="e.g. Authorized Listing Desk"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800"
                     />
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1.5">Mobile Number *</label>
+                    <label className="block font-bold text-slate-700 mb-1">Contact Mobile (+91) *</label>
                     <input
                       type="tel"
                       required
                       value={posterPhone}
                       onChange={(e) => setPosterPhone(e.target.value)}
-                      placeholder="e.g. 98123 45678"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-[#002869]"
+                      placeholder="e.g. 98110 44210"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800"
                     />
                   </div>
                 </div>
 
-                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 flex-shrink-0 text-emerald-600" />
-                  <span>Your number is masked to prevent spam calls until you approve verified buyers.</span>
-                </div>
-
-                <div className="pt-4 flex justify-between">
+                <div className="pt-4 flex justify-between items-center">
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="flex items-center gap-1.5 text-slate-600 px-4 py-2 rounded-xl font-bold hover:bg-slate-100"
+                    className="flex items-center gap-1.5 text-slate-600 px-4 py-2 rounded-xl font-bold hover:bg-slate-100 cursor-pointer"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Back</span>
                   </button>
+
                   <button
                     type="submit"
-                    className="flex items-center gap-1.5 bg-[#FF6B35] hover:bg-[#E85520] text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-[#FF6B35]/30 transition-all cursor-pointer"
+                    className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#e0531e] text-white px-7 py-3 rounded-xl font-bold shadow-lg transition-all cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
-                    <span>Publish Listing FREE</span>
+                    <span>Publish Wealth Clinic Listing</span>
                   </button>
                 </div>
               </form>

@@ -12,7 +12,15 @@ import {
   orderBy,
   limit
 } from 'firebase/firestore';
-import { Property, Lead, TeamMember, BlogArticle, CmsSettings } from '../types/property';
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut as firebaseSignOut, 
+  onAuthStateChanged,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { Property, Lead, TeamMember, BlogArticle, CmsSettings, UserProfile } from '../types/property';
 import { PROPERTIES_DATA, BLOG_ARTICLES_DATA } from '../data/mockData';
 
 export const firebaseConfig = {
@@ -36,6 +44,19 @@ try {
   dbInstance = getFirestore(app);
 }
 export const db = dbInstance;
+
+// Initialize Firebase Auth
+let authInstance;
+try {
+  authInstance = getAuth(app);
+} catch (e) {
+  console.warn('Firebase Auth initialize fallback', e);
+  authInstance = null;
+}
+export const auth = authInstance;
+
+export const googleAuthProvider = new GoogleAuthProvider();
+googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
 // ==========================================
 // DEFAULT SEED DATA
@@ -537,4 +558,36 @@ export async function saveCmsSettingsToDb(settings: CmsSettings): Promise<void> 
     console.error('Failed to save CMS settings to Firestore', err);
     throw err;
   }
+}
+
+// ==========================================
+// FIRESTORE & AUTH SERVICES: USER PROFILES
+// ==========================================
+
+export async function fetchUserProfileFromDb(uid: string): Promise<UserProfile | null> {
+  try {
+    const docRef = doc(db, 'users', uid);
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as UserProfile;
+    }
+  } catch (err) {
+    console.warn('Could not fetch user profile from Firestore', err);
+  }
+  const cached = localStorage.getItem(`propertylelo_user_${uid}`);
+  if (cached) {
+    try { return JSON.parse(cached); } catch {}
+  }
+  return null;
+}
+
+export async function saveUserProfileToDb(profile: UserProfile): Promise<void> {
+  try {
+    const docRef = doc(db, 'users', profile.uid);
+    await setDoc(docRef, profile, { merge: true });
+  } catch (err) {
+    console.warn('Could not save user profile to Firestore, caching locally', err);
+  }
+  localStorage.setItem(`propertylelo_user_${profile.uid}`, JSON.stringify(profile));
+  localStorage.setItem('propertylelo_current_user', JSON.stringify(profile));
 }

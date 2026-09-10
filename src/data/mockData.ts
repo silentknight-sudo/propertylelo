@@ -105,6 +105,196 @@ export const CITIES_DATA: CityData[] = [
 
 export const PROPERTIES_DATA: Property[] = [
   {
+    id: 'prop-orion-132',
+    title: 'Orion One 32',
+    tagline: "India's First Freeport Outlet Mall • 29-Yr Lease Guarantee & 12% Assured Return",
+    type: 'Commercial Office',
+    category: 'Commercial',
+    bhk: 0,
+    price: 8280000,
+    priceFormatted: '₹82.80 Lakh - ₹2.50 Cr*',
+    priceRange: '₹82.80 Lakh - ₹2.50 Cr*',
+    pricePerSqft: 8500,
+    area: 1000,
+    locality: 'Sector 132, Noida Expressway',
+    city: 'Noida',
+    state: 'Uttar Pradesh',
+    pincode: '201304',
+    images: [
+      'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1400&q=80'
+    ],
+    verified: true,
+    reraId: 'UPRERAPRJ960554',
+    postedBy: 'Builder',
+    posterName: 'Wellgrow Infotech / Orion Group',
+    posterPhone: '+91 98110 44210',
+    postedDate: 'Verified Today',
+    furnishing: 'Furnished',
+    possession: 'Under Construction',
+    facing: 'North-East',
+    floor: 'Ground to 24th Floor',
+    bathrooms: 8,
+    balconies: 4,
+    parking: 'Dedicated Multi-Level (200+ Cars)',
+    amenities: [
+      'Lake Promenade & 5 Beaches',
+      'Freeport Retail Outlet Mall',
+      'High-Speed Elevators',
+      '100% DG Power Backup',
+      'LEED Gold Certified',
+      '24x7 Security & CCTV',
+      'Double-Height Entrance Lobby',
+      'Multi-Cuisine Food Court',
+      '8-Ft Air-Cooled Corridors',
+      'EV Charging Bays',
+      'Vastu Compliant Architecture',
+      'Rainwater Harvesting'
+    ],
+    description: "Orion One32 is a visionary mixed-use commercial development situated in Sector 132, Noida Expressway, bringing India's first Freeport Outlet Mall concept. Spread across 10 lush acres with European contemporary architecture, it features retail shops, corporate office suites, IT suites, gourmet food courts, and serviced studio apartments. Backed by a 29-year lease guarantee with Freeport Retail and 12% assured returns, Orion One32 combines unprecedented retail footfall with premium office productivity.",
+    maintenanceCharges: '₹8/sq.ft/month',
+    featured: true,
+    virtualTourAvailable: true,
+    developerName: 'Wellgrow Infotech Pvt. Ltd. / Orion Developers',
+    developerExperience: '16+ Years Experience',
+    developerDeliveredProjects: '14+ Landmark Commercial Projects',
+    projectStatus: 'Under Construction (Structure Ready)',
+    possessionDate: 'December 2026',
+    totalLandArea: '10 Acres',
+    totalTowers: '3 Iconic Commercial Towers',
+    totalUnits: '703 Commercial & Retail Units',
+    projectArchitecture: 'European Contemporary • LEED Gold Rated Green Building',
+    leaseGuarantee: '29-Year Lease Guarantee with Freeport Retail • 12% Assured Returns',
+    highlights: [
+      "India's 1st Freeport Outlet Mall featuring 100+ global brands with 30-70% year-round discounts",
+      "29-Year Lease Guarantee in partnership with Freeport Retail London",
+      "12% Assured Returns starting from Day 1 of investment",
+      "3-Acre Central Courtyard with Lake Promenade and 5 thematic recreational beaches",
+      "LEED Gold Rated Green Complex ensuring 40% reduction in air-conditioning energy costs",
+      "Column-free office plates with 8-foot wide air-cooled corridors",
+      "Immediate Noida-Greater Noida Expressway frontage with 50,000+ families within 2 km",
+      "Multi-level basement & surface parking accommodating over 200+ vehicles with EV stations"
+    ],
+    configurations: [
+      {
+        id: 'cfg-1',
+        unitType: 'Retail Shops (High-Street)',
+        carpetArea: '150 - 640 sq.ft',
+        superArea: '200 - 1,000 sq.ft',
+        price: 'Starting ₹1.41 Cr*',
+        priceNumeric: 14100000,
+        pricePerSqft: '₹18,000/sq.ft',
+        floor: 'Ground & Lower Ground Floor'
+      },
+      {
+        id: 'cfg-2',
+        unitType: 'Corporate Office Spaces',
+        carpetArea: '460 - 2,500 sq.ft',
+        superArea: '650 - 3,500 sq.ft',
+        price: 'Starting ₹82.80 Lakh*',
+        priceNumeric: 8280000,
+        pricePerSqft: '₹8,500/sq.ft',
+        floor: '4th to 18th Floors'
+      },
+      {
+        id: 'cfg-3',
+        unitType: 'Gourmet Food Court Units',
+        carpetArea: '150 - 350 sq.ft',
+        superArea: '250 - 500 sq.ft',
+        price: 'Starting ₹27.00 Lakh*',
+        priceNumeric: 2700000,
+        pricePerSqft: '₹16,500/sq.ft',
+        floor: '2nd & 3rd Floors'
+      },
+      {
+        id: 'cfg-4',
+        unitType: 'Serviced Business Suites',
+        carpetArea: '450 - 750 sq.ft',
+        superArea: '600 - 1,100 sq.ft',
+        price: 'Starting ₹65.00 Lakh*',
+        priceNumeric: 6500000,
+        pricePerSqft: '₹9,500/sq.ft',
+        floor: '19th to 24th Floors'
+      }
+    ],
+    floorPlans: [
+      {
+        id: 'fp-1',
+        title: 'Ground Floor High-Street Retail & Anchor Stores',
+        type: 'Retail',
+        size: '150 - 1,200 sq.ft Units',
+        image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80',
+        description: 'Double-height retail frontage along the central beach promenade with continuous footfall circulation.'
+      },
+      {
+        id: 'fp-2',
+        title: '1st Floor Luxury Brands & Fashion Avenue',
+        type: 'Retail',
+        size: '250 - 800 sq.ft Units',
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+        description: 'Open-atrium facing retail units with wide escalators and direct central courtyard views.'
+      },
+      {
+        id: 'fp-3',
+        title: '2nd Floor Multi-Cuisine Food Court & Cafes',
+        type: 'Food Court',
+        size: '150 - 450 sq.ft Kitchens',
+        image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+        description: 'Dedicated exhaust systems, shared 500-seat outdoor terrace seating, and food pickup counters.'
+      },
+      {
+        id: 'fp-4',
+        title: '4th to 18th Floor Grade-A Office Floor Plate',
+        type: 'Office',
+        size: '460 - 30,000 sq.ft Modular Plates',
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
+        description: 'Column-free design with high natural lighting, VRV central air-cooling, and high-speed elevators.'
+      },
+      {
+        id: 'fp-5',
+        title: '10-Acre Master Campus Layout & Traffic Circulation',
+        type: 'Master Plan',
+        size: '10 Acres Master Plan',
+        image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80',
+        description: 'Complete campus master layout detailing vehicular ingress/egress, drop-off porches, and beach promenade.'
+      }
+    ],
+    locationAdvantages: [
+      { landmark: 'Noida-Greater Noida Expressway', time: '0 Mins (Direct)', category: 'Connectivity' },
+      { landmark: 'Jaypee Multispecialty Hospital', time: '2 Mins', category: 'Healthcare' },
+      { landmark: 'Amity University Noida Campus', time: '3 Mins', category: 'Education' },
+      { landmark: 'FNG Expressway Interchange', time: '5 Mins', category: 'Connectivity' },
+      { landmark: 'DND Flyway (Delhi Gateway)', time: '12 Mins', category: 'Connectivity' },
+      { landmark: 'Upcoming Jewar International Airport', time: '35 Mins', category: 'Airport' },
+      { landmark: 'Top MNCs (Adobe, HCL, Infosys, TCS)', time: '2-5 Mins', category: 'Corporate' },
+      { landmark: 'Jaypee Wish Town & ATS Residential Catchment', time: '2 Mins', category: 'Corporate' }
+    ],
+    brochureUrl: 'https://wealth-clinic.com/properties-in-noida/orion-one-32',
+    videoWalkthroughUrl: 'https://www.youtube.com',
+    aboutDeveloper: "Wellgrow Infotech Private Limited, part of the Orion Group, has established itself as one of the most innovative commercial developers in Delhi NCR. With over 16 years of engineering leadership, the group is celebrated for introducing global real estate concepts to North India, including international Freeport retail partnerships, LEED Gold environmental compliance, and high rental-yield commercial ecosystems.",
+    faqs: [
+      {
+        question: "Is Orion One 32 registered under Uttar Pradesh RERA?",
+        answer: "Yes, Orion One 32 is completely registered and compliant with UP RERA under registration number UPRERAPRJ960554. All approvals, land titles, and construction milestones are verified."
+      },
+      {
+        question: "What is the 29-Year Lease Guarantee with Freeport Retail?",
+        answer: "Orion One 32 has partnered with Freeport Retail London, the world's leading designer outlet operator. Retail spaces enjoy a 29-year master lease agreement with guaranteed international brand occupancy and consistent rental returns."
+      },
+      {
+        question: "What is the expected possession timeline for Orion One 32?",
+        answer: "The structural work is advanced, and final fit-outs and internal handovers are slated for December 2026, fully compliant with UP RERA schedule."
+      },
+      {
+        question: "What are the investment sizes and assured returns available?",
+        answer: "Investments start from ₹27 Lakh for food court units and ₹82.80 Lakh for commercial office spaces, offering up to 12% assured returns with quarterly payout options and zero brokerage through Wealth Clinic."
+      }
+    ]
+  },
+  {
     id: 'prop-1',
     title: '3 BHK Ultra-Luxury Garden Apartment',
     tagline: 'Park facing corner unit with smart home automation',
@@ -720,6 +910,25 @@ export const PROPERTIES_DATA: Property[] = [
 ];
 
 export const NEW_PROJECTS_DATA: NewProject[] = [
+  {
+    id: 'proj-orion-132',
+    name: 'Orion One 32 (Freeport Outlet Mall)',
+    builder: 'Wellgrow Infotech / Orion Group',
+    locality: 'Sector 132, Noida Expressway',
+    city: 'Noida',
+    priceRange: '₹82.80 Lakh - ₹2.50 Cr',
+    units: 'Retail, Offices, Food Court & Studio Suites',
+    possessionDate: 'Dec 2026',
+    reraId: 'UPRERAPRJ960554',
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
+    badge: '12% Assured Returns',
+    launchOffer: '29-Yr Lease Guarantee with Freeport Retail London + Day-1 Rental Yield',
+    highlights: [
+      "India's 1st Freeport Outlet Mall with 100+ global outlet brands",
+      "3-Acre Central Courtyard with Lake Promenade & 5 Thematic Beaches",
+      "LEED Gold Rated Green Architecture with 8-ft air-cooled corridors"
+    ]
+  },
   {
     id: 'proj-1',
     name: 'Godrej Woods & Forest Groves',

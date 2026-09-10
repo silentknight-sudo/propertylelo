@@ -1,9 +1,40 @@
-export type PropertyType = 'Apartment' | 'Villa' | 'Independent House' | 'Plot' | 'Commercial Office' | 'Penthouse' | 'Studio Flat';
+export type PropertyType = 'Apartment' | 'Villa' | 'Independent House' | 'Plot' | 'Commercial Office' | 'Retail Shop' | 'Food Court' | 'Penthouse' | 'Studio Flat';
 export type ListingCategory = 'Buy' | 'Commercial' | 'New Projects' | 'Plot';
 export type PostedByType = 'Owner' | 'Builder' | 'Verified Agent';
 export type FurnishingStatus = 'Furnished' | 'Semi-Furnished' | 'Unfurnished';
 export type PossessionStatus = 'Ready to Move' | 'Under Construction' | 'New Launch';
 export type ApprovalStatus = 'published' | 'pending_approval' | 'rejected' | 'draft';
+
+export interface ProjectConfiguration {
+  id?: string;
+  unitType: string; // e.g. "Retail Shops", "Office Space", "Food Court", "Studio Suite"
+  carpetArea: string; // e.g. "150 - 640 sq.ft"
+  superArea?: string; // e.g. "200 - 1000 sq.ft"
+  price: string; // e.g. "Starting ₹1.41 Cr*"
+  priceNumeric?: number;
+  pricePerSqft?: string; // e.g. "₹18,000/sq.ft"
+  floor?: string; // e.g. "Lower Ground & Ground"
+}
+
+export interface FloorPlanItem {
+  id?: string;
+  title: string; // e.g. "Ground Floor Retail & Anchor", "4th Floor Office Suites"
+  type: string; // "Retail", "Office", "Food Court", "Studio", "Master Plan"
+  size: string; // "328 - 789 sq.ft"
+  image: string; // blueprint image URL
+  description?: string;
+}
+
+export interface LandmarkDistance {
+  landmark: string; // e.g. "Noida-Greater Noida Expressway", "Amity University", "Jaypee Hospital"
+  time: string; // e.g. "0 Mins", "3 Mins", "2 Mins"
+  category?: 'Connectivity' | 'Education' | 'Healthcare' | 'Corporate' | 'Airport';
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
 
 export interface Property {
   id: string;
@@ -46,9 +77,41 @@ export interface Property {
   submittedByName?: string;
   approvedBy?: string;
   approvalNotes?: string;
+
+  // Wealth Clinic Project Fields
+  developerName?: string;
+  developerExperience?: string;
+  developerDeliveredProjects?: string;
+  projectStatus?: string; // e.g. "Under Construction", "Ready to Move"
+  possessionDate?: string; // e.g. "December 2026"
+  totalLandArea?: string; // e.g. "10 Acres"
+  totalTowers?: string; // e.g. "3 Towers"
+  totalUnits?: string; // e.g. "703 Units"
+  projectArchitecture?: string; // e.g. "European Architecture • LEED Gold Rated"
+  leaseGuarantee?: string; // e.g. "29-Year Lease Guarantee • 12% Assured Returns"
+  priceRange?: string; // e.g. "₹82.50 Lakh - ₹2.50 Cr*"
+  highlights?: string[]; // Project USPs
+  configurations?: ProjectConfiguration[];
+  floorPlans?: FloorPlanItem[];
+  locationAdvantages?: LandmarkDistance[];
+  brochureUrl?: string;
+  videoWalkthroughUrl?: string;
+  aboutDeveloper?: string;
+  faqs?: FaqItem[];
 }
 
 export type UserRole = 'admin' | 'agent' | 'editor';
+
+export interface UserProfile {
+  uid: string;
+  name: string;
+  email: string;
+  phone: string;
+  photoURL?: string;
+  role?: 'buyer' | 'owner' | 'agent' | 'user';
+  createdAt?: string;
+  provider: 'google' | 'custom';
+}
 
 export interface TeamMember {
   id: string;
