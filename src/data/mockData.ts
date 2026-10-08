@@ -272,7 +272,7 @@ export const PROPERTIES_DATA: Property[] = [
       { landmark: 'Top MNCs (Adobe, HCL, Infosys, TCS)', time: '2-5 Mins', category: 'Corporate' },
       { landmark: 'Jaypee Wish Town & ATS Residential Catchment', time: '2 Mins', category: 'Corporate' }
     ],
-    brochureUrl: 'https://wealth-clinic.com/properties-in-noida/orion-one-32',
+    brochureUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80',
     videoWalkthroughUrl: 'https://www.youtube.com',
     aboutDeveloper: "Wellgrow Infotech Private Limited, part of the Orion Group, has established itself as one of the most innovative commercial developers in Delhi NCR. With over 16 years of engineering leadership, the group is celebrated for introducing global real estate concepts to North India, including international Freeport retail partnerships, LEED Gold environmental compliance, and high rental-yield commercial ecosystems.",
     faqs: [
@@ -290,7 +290,7 @@ export const PROPERTIES_DATA: Property[] = [
       },
       {
         question: "What are the investment sizes and assured returns available?",
-        answer: "Investments start from ₹27 Lakh for food court units and ₹82.80 Lakh for commercial office spaces, offering up to 12% assured returns with quarterly payout options and zero brokerage through Wealth Clinic."
+        answer: "Investments start from ₹27 Lakh for food court units and ₹82.80 Lakh for commercial office spaces, offering up to 12% assured returns with quarterly payout options and zero brokerage through PropertyLelo."
       }
     ]
   },

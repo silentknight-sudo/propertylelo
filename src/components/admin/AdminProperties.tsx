@@ -586,10 +586,10 @@ export const AdminProperties: React.FC<AdminPropertiesProps> = ({
                 </div>
               </div>
 
-              {/* Wealth Clinic Project Fields */}
+              {/* Detailed Project Specifications */}
               <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
                 <div className="text-[11px] font-bold text-[#002869] uppercase tracking-wider">
-                  Wealth Clinic Project Specifications
+                  Detailed Project Specifications
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

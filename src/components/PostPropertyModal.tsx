@@ -70,7 +70,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
   const [highlightsInput, setHighlightsInput] = useState(
     "India's 1st Freeport Outlet Mall, 3-Acre Courtyard with 5 Beaches, 12% Assured Returns, LEED Gold Rated Complex"
   );
-  const [brochureUrl, setBrochureUrl] = useState('https://wealth-clinic.com/properties-in-noida/orion-one-32');
+  const [brochureUrl, setBrochureUrl] = useState('');
   const [furnishing, setFurnishing] = useState<FurnishingStatus>('Semi-Furnished');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([
     'Clubhouse',
@@ -184,7 +184,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
       images: imageUrl ? [imageUrl] : [
         'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'
       ],
-      brochureUrl: brochureUrl || 'https://wealth-clinic.com/properties-in-noida/orion-one-32',
+      brochureUrl: brochureUrl || '',
       highlights: parsedHighlights,
       verified: true,
       postedBy: postedBy,
@@ -221,7 +221,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
       // Confetti fallback
     }
 
-    onNotify('🎉 Property published successfully in Wealth Clinic format!');
+    onNotify('🎉 Property published successfully with comprehensive project specifications!');
   };
 
   return (
@@ -253,11 +253,11 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
             </h3>
 
             <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Your listing (ID: <span className="font-bold text-[#002869]">{generatedId}</span>) is now active with Wealth Clinic style specifications, project overview, configurations, and RERA verification.
+              Your listing (ID: <span className="font-bold text-[#002869]">{generatedId}</span>) is now active with complete project specifications, overview, configurations, and RERA verification.
             </p>
 
             <div className="bg-blue-50 rounded-2xl p-4 max-w-sm mx-auto text-xs text-[#002869] font-semibold border border-blue-200">
-              ⚡ RERA Verified • Zero Brokerage • Orion One 32 Format
+              ⚡ RERA Verified • Zero Brokerage • Direct Buyer Connect
             </div>
 
             <div className="pt-4">
@@ -276,7 +276,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
             <div className="mb-6">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B35] text-xs font-bold uppercase mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
-                Wealth Clinic Project Format
+                Verified Project Format
               </div>
               <h3 className="text-2xl font-extrabold text-[#002869] font-heading">
                 List Verified Property / Project
@@ -714,7 +714,7 @@ export const PostPropertyModal: React.FC<PostPropertyModalProps> = ({
                     className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#e0531e] text-white px-7 py-3 rounded-xl font-bold shadow-lg transition-all cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
-                    <span>Publish Wealth Clinic Listing</span>
+                    <span>Publish Verified Project Listing</span>
                   </button>
                 </div>
               </form>

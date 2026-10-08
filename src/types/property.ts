@@ -78,7 +78,7 @@ export interface Property {
   approvedBy?: string;
   approvalNotes?: string;
 
-  // Wealth Clinic Project Fields
+  // Comprehensive Project Specifications
   developerName?: string;
   developerExperience?: string;
   developerDeliveredProjects?: string;

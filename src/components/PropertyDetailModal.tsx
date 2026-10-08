@@ -134,9 +134,9 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
 
   const handleDownloadBrochure = () => {
     onNotify('Downloading Official Project Brochure PDF...');
-    // Trigger download or mock PDF link
+    // Trigger download or brochure link
     const link = document.createElement('a');
-    link.href = property.brochureUrl || 'https://wealth-clinic.com/properties-in-noida/orion-one-32';
+    link.href = property.brochureUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80';
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     link.click();
@@ -301,7 +301,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
           </div>
         </div>
 
-        {/* Wealth Clinic Style Top Hero Title Bar */}
+        {/* Top Hero Title Bar */}
         <div className="bg-gradient-to-r from-slate-900 via-[#002869] to-slate-900 text-white px-4 sm:px-8 py-6 sm:py-8 border-b border-slate-800">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-2">
@@ -382,7 +382,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
           </div>
         </div>
 
-        {/* Wealth Clinic Sticky Sub-Navigation Bar */}
+        {/* Sticky Sub-Navigation Bar */}
         <div className="sticky top-[57px] z-20 bg-slate-50 border-b border-slate-200 px-4 sm:px-8 py-2 overflow-x-auto no-scrollbar flex items-center gap-2 sm:gap-3 text-xs font-bold text-slate-600">
           {[
             { id: 'overview', label: 'Overview' },
@@ -562,7 +562,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
               </div>
             </div>
 
-            {/* SECTION 2: HIGHLIGHTS & USPS (Wealth Clinic Signature) */}
+            {/* SECTION 2: HIGHLIGHTS & USPS */}
             <div ref={highlightsRef} id="highlights" className="scroll-mt-32 space-y-4">
               <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
                 <Sparkles className="w-5 h-5 text-[#FF6B35]" />
@@ -954,11 +954,11 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
 
           </div>
 
-          {/* RIGHT COLUMN (32% - WEALTH CLINIC STICKY SIDEBAR ENQUIRY BOX) */}
+          {/* RIGHT COLUMN (STICKY SIDEBAR ENQUIRY BOX) */}
           <div className="lg:col-span-4">
             <div className="sticky top-24 space-y-4">
 
-              {/* Wealth Clinic Style Lead Card */}
+              {/* Consultation Lead Card */}
               <div className="bg-white rounded-3xl p-6 border-2 border-[#002869]/10 shadow-xl space-y-5">
                 
                 {/* Header */}
