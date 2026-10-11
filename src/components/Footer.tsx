@@ -178,6 +178,45 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
         </div>
 
+        {/* Delhi NCR Real Estate SEO Keywords Hub */}
+        <div className="py-8 border-b border-white/10 text-xs">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 rounded-full bg-[#FF6B35]"></span>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+              Top Real Estate Searches in Delhi NCR
+            </h4>
+          </div>
+          <div className="flex flex-wrap gap-2 text-blue-200/80">
+            {[
+              'Flats in Noida Expressway',
+              'Apartments in Dwarka Expressway Gurgaon',
+              '2 BHK Flats in Noida Sector 150',
+              'Luxury Villas on Golf Course Road',
+              'Commercial Shops in Sector 132 Noida',
+              'Plots near Jewar International Airport',
+              '3 BHK Flats in Greater Noida West',
+              'Builder Floors in South Delhi',
+              'Zero Brokerage Properties in Delhi NCR',
+              'RERA Approved Projects in Gurugram',
+              'Ready to Move Flats in Indirapuram Ghaziabad',
+              'High Return Commercial Real Estate Noida'
+            ].map((keyword) => (
+              <button
+                key={keyword}
+                type="button"
+                onClick={() => {
+                  onSelectCity('Delhi NCR');
+                  const el = document.getElementById('properties-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-blue-200 hover:text-white transition-all text-[11px] cursor-pointer border border-white/10"
+              >
+                {keyword}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Disclaimer & Bottom Bar */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-blue-300/70">
           <p className="text-center md:text-left leading-relaxed">

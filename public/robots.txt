@@ -1,0 +1,11 @@
+# PropertyLelo - Robots Configuration for Search Engines
+User-agent: *
+Allow: /
+Allow: /insights
+Allow: /properties
+Allow: /projects
+Disallow: /#admin
+Disallow: /#crm
+Disallow: /#team
+
+Sitemap: https://propertylelo.com/sitemap.xml

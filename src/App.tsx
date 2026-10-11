@@ -156,7 +156,20 @@ function MainApp() {
       if (fetchedProps && fetchedProps.length > 0) setProperties(fetchedProps);
       if (fetchedLeads && fetchedLeads.length > 0) setLeads(fetchedLeads);
       if (fetchedTeam && fetchedTeam.length > 0) setTeamMembers(fetchedTeam);
-      if (fetchedBlogs && fetchedBlogs.length > 0) setBlogs(fetchedBlogs);
+      if (fetchedBlogs && fetchedBlogs.length > 0) {
+        // Ensure high-ranking Delhi NCR SEO blogs are present and synced
+        const existingIds = new Set(fetchedBlogs.map((b) => b.id));
+        const mergedBlogs = [...fetchedBlogs];
+        for (const defaultBlog of BLOG_ARTICLES_DATA) {
+          if (!existingIds.has(defaultBlog.id)) {
+            mergedBlogs.push(defaultBlog);
+            saveBlogToDb(defaultBlog).catch(() => {});
+          }
+        }
+        setBlogs(mergedBlogs);
+      } else {
+        setBlogs(BLOG_ARTICLES_DATA);
+      }
       if (fetchedCms) setCmsSettings(fetchedCms);
     } catch (err) {
       console.error('Error fetching database collections', err);
@@ -616,7 +629,11 @@ function MainApp() {
 
         {/* 8. Market Insights & Legal Guides (Connected to Approved Blogs) */}
         {(cmsSettings.features.insightsBlog ?? cmsSettings.features.blogSection ?? true) && (
-          <InsightsBlog blogs={blogs} onNotify={showToast} />
+          <InsightsBlog 
+            blogs={blogs} 
+            onNotify={showToast} 
+            onSelectCity={setSelectedCity} 
+          />
         )}
 
         {/* 9. Testimonials Carousel */}
