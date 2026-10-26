@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {announcementBar.badge}
                 </span>
               )}
-              <span className="truncate">{announcementBar.text}</span>
+              <span className="truncate hidden sm:inline">{announcementBar.text}</span>
             </div>
             {announcementBar.linkText && (
               <a
@@ -111,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between gap-4">
           {/* Left: Brand Logo & Quick City Switcher */}
           <div className="flex items-center gap-6">
-            <a href="#" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] rounded-lg">
+            <a href="#" aria-label="PropertyLelo home" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] rounded-lg">
               <Logo size={isScrolled ? 'sm' : 'md'} />
             </a>
 
@@ -367,8 +367,8 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
               </span>
-              <span className="whitespace-nowrap">Post Property</span>
-              <span className="bg-white/20 text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded tracking-wide ml-0.5">
+              <span className="whitespace-nowrap">Post<span className="hidden sm:inline"> Property</span></span>
+              <span className="hidden sm:inline bg-white/20 text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded tracking-wide ml-0.5">
                 Free
               </span>
             </motion.button>

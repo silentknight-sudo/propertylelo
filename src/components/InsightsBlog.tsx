@@ -24,12 +24,14 @@ interface InsightsBlogProps {
   blogs?: BlogArticle[];
   onNotify?: (msg: string) => void;
   onSelectCity?: (city: string) => void;
+  initialArticleSlug?: string | null;
 }
 
 export const InsightsBlog: React.FC<InsightsBlogProps> = ({ 
   blogs, 
   onNotify,
-  onSelectCity 
+  onSelectCity,
+  initialArticleSlug
 }) => {
   const [selectedArticle, setSelectedArticle] = useState<BlogArticle | Article | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -68,6 +70,42 @@ export const InsightsBlog: React.FC<InsightsBlogProps> = ({
       return matchesCategory && matchesSearch;
     });
   }, [publishedBlogs, selectedCategory, searchQuery]);
+
+  // Open an article straight from a shared/indexed link (?article=<slug> or /insights/<slug>)
+  const [pendingSlug, setPendingSlug] = useState<string | null>(initialArticleSlug || null);
+  useEffect(() => {
+    if (!pendingSlug) return;
+    const match = publishedBlogs.find((b: any) => b.slug === pendingSlug);
+    if (match) {
+      setSelectedArticle(match);
+      setPendingSlug(null);
+      document.getElementById('insights')?.scrollIntoView();
+    }
+  }, [pendingSlug, publishedBlogs]);
+
+  // Per-article <title>, description, canonical & ?article= URL while the reader is open
+  useEffect(() => {
+    if (!selectedArticle || !('seo' in selectedArticle) || !selectedArticle.seo) return;
+    const prevTitle = document.title;
+    const descEl = document.head.querySelector<HTMLMetaElement>('meta[name="description"]');
+    const canonicalEl = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const prevDesc = descEl?.content;
+    const prevCanonical = canonicalEl?.href;
+    document.title = selectedArticle.seo.metaTitle || `${selectedArticle.title} | PropertyLelo`;
+    if (descEl && selectedArticle.seo.metaDescription) descEl.content = selectedArticle.seo.metaDescription;
+    if (canonicalEl && selectedArticle.seo.canonicalUrl) canonicalEl.href = selectedArticle.seo.canonicalUrl;
+    const url = new URL(window.location.href);
+    url.searchParams.set('article', selectedArticle.slug);
+    window.history.replaceState(window.history.state, '', url);
+    return () => {
+      document.title = prevTitle;
+      if (descEl && prevDesc !== undefined) descEl.content = prevDesc;
+      if (canonicalEl && prevCanonical) canonicalEl.href = prevCanonical;
+      const back = new URL(window.location.href);
+      back.searchParams.delete('article');
+      window.history.replaceState(window.history.state, '', back);
+    };
+  }, [selectedArticle]);
 
   // Inject or update Schema.org Article metadata when modal is opened for top SEO scoring
   useEffect(() => {

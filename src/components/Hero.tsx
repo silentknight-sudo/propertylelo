@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion, useInView, animate } from 'motion/react';
 import { 
   Search, 
   MapPin, 
@@ -16,6 +16,38 @@ import {
 } from 'lucide-react';
 import { ListingCategory, PropertyType } from '../types/property';
 import { getAllCities } from '../lib/cities';
+
+const HeroScene = lazy(() => import('./three/HeroScene'));
+
+function canUseWebGL() {
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(window.WebGLRenderingContext && (canvas.getContext('webgl2') || canvas.getContext('webgl')));
+  } catch {
+    return false;
+  }
+}
+
+const AnimatedCounter: React.FC<{ to: number; suffix: string; decimals?: number }> = ({ to, suffix, decimals = 0 }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  useEffect(() => {
+    if (!inView || !ref.current) return;
+    const node = ref.current;
+    const controls = animate(0, to, {
+      duration: 2,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => {
+        node.textContent = `${v.toFixed(decimals)}${suffix}`;
+      }
+    });
+    return () => controls.stop();
+  }, [inView, to, suffix, decimals]);
+  return <span ref={ref}>{`${to}${suffix}`}</span>;
+};
+
+const HEADLINE_TOP = ['Buy', 'Verified', 'Homes', '&', 'Commercial', 'Property'];
+const HEADLINE_BOTTOM = ['in', 'Delhi', 'NCR', '&', 'Across', 'India'];
 
 interface HeroProps {
   activeCategory: ListingCategory;
@@ -87,6 +119,18 @@ export const Hero: React.FC<HeroProps> = ({
 
   const activeBudgetOptions = budgetOptionsBuy;
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+  const [show3d, setShow3d] = useState(false);
+  useEffect(() => {
+    setShow3d(!reduceMotion && canUseWebGL());
+  }, [reduceMotion]);
+
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 160]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, reduceMotion ? 1 : 0.15]);
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 1.12]);
+
   const handleExecuteSearch = () => {
     onSearch({
       category: activeCategory,
@@ -103,32 +147,41 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   return (
-    <section className="relative pt-24 sm:pt-28 pb-16 lg:pb-24 overflow-hidden bg-slate-900">
-      {/* Background Image with Dark Blue Tint & Ken Burns Animation */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-10000 ease-out"
+    <section
+      ref={sectionRef}
+      aria-labelledby="hero-heading"
+      className="relative pt-24 sm:pt-28 pb-16 lg:pb-24 overflow-hidden bg-[#001233] min-h-[92vh] flex items-center"
+    >
+      {/* Background: static photo fallback, live 3D skyline on capable devices */}
+      <motion.div className="absolute inset-0 z-0 overflow-hidden" style={{ scale: sceneScale }}>
+        <div
+          className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=2000&q=85')`,
-            animation: 'pulseSubtle 20s infinite alternate'
+            opacity: show3d ? 0.18 : 1
           }}
         />
-        {/* Deep Blue Gradient Layer (Matches Image 1 design) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#002869]/85 via-[#002869]/75 to-[#001947]/95 backdrop-blur-[2px]" />
-        
-        {/* Subtle grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-10" 
-          style={{
-            backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
-            backgroundSize: '32px 32px'
-          }}
-        />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#001233] via-[#002869]/70 to-[#001233]" />
+        {show3d && (
+          <Suspense fallback={null}>
+            <HeroScene />
+          </Suspense>
+        )}
+        {/* Readability vignette over the scene */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,18,51,0.62)_0%,rgba(0,18,51,0.45)_45%,rgba(0,18,51,0.9)_100%)] pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#001233] pointer-events-none" />
+      </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Glow orbs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-[#FF6B35]/20 blur-3xl animate-orb" />
+      <div className="pointer-events-none absolute -bottom-40 -right-24 w-[32rem] h-[32rem] rounded-full bg-[#2563eb]/25 blur-3xl animate-orb [animation-delay:-6s]" />
+
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      >
         {/* Headline & Subtitle */}
-        <div className="text-center max-w-4xl mx-auto pt-6 sm:pt-10">
+        <div className="text-center max-w-5xl mx-auto pt-6 sm:pt-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -136,41 +189,62 @@ export const Hero: React.FC<HeroProps> = ({
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-semibold mb-6 shadow-sm"
           >
             <span className="flex h-2 w-2 rounded-full bg-[#FF6B35] animate-ping" />
-            <span className="text-blue-100">#1 Real Estate Portal in India</span>
+            <span className="text-blue-100">RERA-Verified Listings</span>
             <span className="text-white/40">|</span>
-            <span className="text-orange-300 font-medium">Zero Brokerage Options</span>
+            <span className="text-orange-300 font-medium">0% Brokerage • Direct Owners & Builders</span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading leading-tight"
+          <h1
+            id="hero-heading"
+            className="text-3xl sm:text-5xl lg:text-[4.25rem] font-extrabold text-white tracking-tight font-heading leading-[1.08] [perspective:900px]"
           >
-            Find Your Perfect Property <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-orange-200">
-              Across India
+            <span className="block">
+              {HEADLINE_TOP.map((word, i) => (
+                <motion.span
+                  key={`t-${i}`}
+                  className="inline-block mr-[0.25em] origin-bottom"
+                  initial={reduceMotion ? false : { opacity: 0, rotateX: -90, y: 30 }}
+                  animate={{ opacity: 1, rotateX: 0, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.1 + i * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {word}
+                </motion.span>
+              ))}
             </span>
-          </motion.h1>
+            <span className="block">
+              {HEADLINE_BOTTOM.map((word, i) => (
+                <motion.span
+                  key={`b-${i}`}
+                  className="inline-block mr-[0.25em] origin-bottom text-transparent bg-clip-text bg-gradient-to-r from-[#ffd0b8] via-[#FF6B35] to-[#ffb38a] animate-shimmer bg-[length:200%_auto]"
+                  initial={reduceMotion ? false : { opacity: 0, rotateX: -90, y: 30 }}
+                  animate={{ opacity: 1, rotateX: 0, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 + i * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </span>
+          </h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-4 text-base sm:text-lg text-blue-100/90 max-w-2xl mx-auto leading-relaxed"
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="mt-5 text-base sm:text-lg text-blue-100/90 max-w-3xl mx-auto leading-relaxed"
           >
-            Explore 50 Lakh+ verified residential & commercial listings in 200+ cities with India's most trusted marketplace.
+            Flats in Noida Sector 150, luxury apartments on Golf Course Road Gurgaon, assured-return shops on Noida Expressway,
+            villas in Pune & Hyderabad — search RERA-approved projects and deal directly with owners and builders.
           </motion.p>
         </div>
 
         {/* Tabbed Search Box (Centerpiece from Image 1) */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="mt-10 max-w-5xl mx-auto"
+          initial={reduceMotion ? false : { opacity: 0, y: 60, scale: 0.94 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-10 max-w-5xl mx-auto relative z-20"
         >
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 border border-white/40">
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] p-4 sm:p-6 border border-white/40 ring-1 ring-[#FF6B35]/10">
             {/* Category Tabs */}
             <div className="flex items-center gap-1 sm:gap-2 pb-4 border-b border-slate-100 overflow-x-auto no-scrollbar">
               {searchCategories.map((cat) => {
@@ -392,12 +466,12 @@ export const Hero: React.FC<HeroProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          transition={{ duration: 0.6, delay: 1.3 }}
           className="mt-14 max-w-4xl mx-auto grid grid-cols-3 gap-4 sm:gap-8 text-center text-white"
         >
           <div className="flex flex-col items-center">
             <span className="text-2xl sm:text-4xl font-extrabold font-heading text-white tracking-tight">
-              50 Lakh+
+              <AnimatedCounter to={50} suffix=" Lakh+" />
             </span>
             <span className="text-xs sm:text-sm text-blue-200 font-medium mt-1">
               Active Listings
@@ -406,7 +480,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           <div className="flex flex-col items-center border-x border-white/15">
             <span className="text-2xl sm:text-4xl font-extrabold font-heading text-white tracking-tight">
-              200+
+              <AnimatedCounter to={200} suffix="+" />
             </span>
             <span className="text-xs sm:text-sm text-blue-200 font-medium mt-1">
               Cities Covered
@@ -415,14 +489,14 @@ export const Hero: React.FC<HeroProps> = ({
 
           <div className="flex flex-col items-center">
             <span className="text-2xl sm:text-4xl font-extrabold font-heading text-white tracking-tight">
-              1 Cr+
+              <AnimatedCounter to={1} suffix=" Cr+" />
             </span>
             <span className="text-xs sm:text-sm text-blue-200 font-medium mt-1">
               Monthly Users
             </span>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };

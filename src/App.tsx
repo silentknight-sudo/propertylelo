@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { FeaturedCities } from './components/FeaturedCities';
@@ -22,6 +22,12 @@ import { SavedPropertiesDrawer } from './components/SavedPropertiesDrawer';
 import { AuthModal } from './components/AuthModal';
 import { Toast } from './components/Toast';
 import { AuthProvider } from './context/AuthContext';
+import { SeoManager } from './components/SeoManager';
+import { SmoothScroll } from './components/fx/SmoothScroll';
+import { Reveal3D } from './components/fx/Reveal3D';
+import { FeaturedShowcase } from './components/FeaturedShowcase';
+import { LocalityMarquee } from './components/LocalityMarquee';
+import { propertySlug, findPropertyBySlug } from './lib/seo';
 
 // Admin & Team RBAC System
 import { AdminPortal } from './components/admin/AdminPortal';
@@ -115,9 +121,17 @@ function MainApp() {
   const [cmsSettings, setCmsSettings] = useState<CmsSettings>(DEFAULT_CMS_SETTINGS);
   const [isDbLoading, setIsDbLoading] = useState<boolean>(true);
 
+  // --- Deep links (?property=, ?city=, ?article=) so every listing has a crawlable URL ---
+  const initialParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const [pendingPropertySlug, setPendingPropertySlug] = useState<string | null>(() => initialParams.get('property'));
+  const initialArticleSlug = useMemo(() => {
+    const fromPath = window.location.pathname.match(/^\/insights\/([^/?#]+)/);
+    return initialParams.get('article') || (fromPath ? decodeURIComponent(fromPath[1]) : null);
+  }, [initialParams]);
+
   // --- Consumer Website Filter State ---
   const [activeCategory, setActiveCategory] = useState<ListingCategory>('Buy');
-  const [selectedCity, setSelectedCity] = useState<string>('Delhi NCR');
+  const [selectedCity, setSelectedCity] = useState<string>(() => initialParams.get('city') || 'Delhi NCR');
   const [savedIds, setSavedIds] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem('propertylelo_saved');
@@ -498,8 +512,34 @@ function MainApp() {
   };
 
   // Only show published properties on the public site
-  const publishedProperties = properties.filter((p) => p.status === 'published' || !p.status);
+  const publishedProperties = useMemo(
+    () => properties.filter((p) => p.status === 'published' || !p.status),
+    [properties]
+  );
   const savedPropertiesList = publishedProperties.filter((p) => savedIds.includes(p.id));
+
+  // Resolve a ?property= deep link once listings (mock or Firestore) are available
+  useEffect(() => {
+    if (!pendingPropertySlug) return;
+    const match = findPropertyBySlug(publishedProperties, pendingPropertySlug);
+    if (match) {
+      setSelectedPropertyDetail(match);
+      setPendingPropertySlug(null);
+    } else if (!isDbLoading) {
+      setPendingPropertySlug(null);
+    }
+  }, [pendingPropertySlug, publishedProperties, isDbLoading]);
+
+  // Mirror the open listing & city into the address bar (shareable, indexable URLs)
+  useEffect(() => {
+    if (isAdminView || pendingPropertySlug) return;
+    const url = new URL(window.location.href);
+    if (selectedPropertyDetail) url.searchParams.set('property', propertySlug(selectedPropertyDetail));
+    else url.searchParams.delete('property');
+    if (selectedCity && selectedCity !== 'Delhi NCR') url.searchParams.set('city', selectedCity);
+    else url.searchParams.delete('city');
+    if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
+  }, [selectedPropertyDetail, selectedCity, isAdminView, pendingPropertySlug]);
 
   // ==========================================
   // VIEW: FULL ENTERPRISE ADMIN / TEAM CRM
@@ -541,6 +581,12 @@ function MainApp() {
   // ==========================================
   return (
     <div className="min-h-screen bg-[#F8F9FB] text-[#1A1A2E] font-sans antialiased flex flex-col selection:bg-[#FF6B35] selection:text-white">
+      <SmoothScroll />
+      <SeoManager
+        properties={publishedProperties}
+        selectedCity={selectedCity}
+        activeProperty={selectedPropertyDetail}
+      />
       {/* 1. Header (Sticky with Announcement Bar + Admin Link) */}
       <Header
         activeCategory={activeCategory}
@@ -572,8 +618,24 @@ function MainApp() {
           />
         )}
 
+        {/* 2b. Scrolling locality ticker (internal keyword links) */}
+        <LocalityMarquee
+          onSelectCity={(city) => {
+            setSelectedCity(city);
+            showToast(`Viewing properties in ${city}`);
+            document.getElementById('properties-section')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
+
+        {/* 2c. Pinned 3D horizontal showcase of featured listings */}
+        <FeaturedShowcase
+          properties={publishedProperties}
+          onSelectProperty={(prop) => setSelectedPropertyDetail(prop)}
+        />
+
         {/* 3. Featured Cities Grid */}
         {(cmsSettings.features.featuredCities ?? cmsSettings.features.cityPills ?? true) && (
+          <Reveal3D>
           <FeaturedCities
             selectedCity={selectedCity}
             onSelectCity={(cityName) => {
@@ -581,10 +643,12 @@ function MainApp() {
               showToast(cityName ? `Viewing properties in ${cityName}` : 'Viewing all cities');
             }}
           />
+          </Reveal3D>
         )}
 
         {/* 4. Why Choose Us (Trust Badges & Value Pillars) */}
         {(cmsSettings.features.whyChooseUs ?? true) && (
+          <Reveal3D>
           <WhyChooseUs
             onOpenEmiCalculator={() => {
               const el = document.getElementById('tools-section');
@@ -592,6 +656,7 @@ function MainApp() {
             }}
             onOpenPostProperty={() => setIsPostPropertyOpen(true)}
           />
+          </Reveal3D>
         )}
 
         {/* 5. Main Verified Property Grid / Browser */}
@@ -612,19 +677,23 @@ function MainApp() {
 
         {/* 6. New Projects & Township Developments Carousel */}
         {(cmsSettings.features.newProjects ?? cmsSettings.features.featuredProjects ?? true) && (
+          <Reveal3D>
           <NewProjectsCarousel
             onBrochureDownload={(projName) => {
               showToast(`Downloading official RERA Brochure & Floor Plan for ${projName}...`);
             }}
             onVipEnquiry={(proj) => setVipProject(proj)}
           />
+          </Reveal3D>
         )}
 
         {/* 7. Tools Suite (EMI Calculator, Price Trends, Land Converter) */}
         {(cmsSettings.features.toolsSuite ?? cmsSettings.features.financialTools ?? true) && (
+          <Reveal3D>
           <ToolsSuite
             onApplyLoan={handleLoanApplicationSubmit}
           />
+          </Reveal3D>
         )}
 
         {/* 8. Market Insights & Legal Guides (Connected to Approved Blogs) */}
@@ -633,17 +702,18 @@ function MainApp() {
             blogs={blogs} 
             onNotify={showToast} 
             onSelectCity={setSelectedCity} 
+            initialArticleSlug={initialArticleSlug}
           />
         )}
 
         {/* 9. Testimonials Carousel */}
         {(cmsSettings.features.testimonials ?? true) && (
-          <Testimonials />
+          <Reveal3D><Testimonials /></Reveal3D>
         )}
 
         {/* 10. CTA Banner ("Post Property for FREE") */}
         {(cmsSettings.features.postPropertyCta ?? cmsSettings.features.ctaBanner ?? true) && (
-          <CtaBanner onOpenPostProperty={() => setIsPostPropertyOpen(true)} />
+          <Reveal3D><CtaBanner onOpenPostProperty={() => setIsPostPropertyOpen(true)} /></Reveal3D>
         )}
 
         {/* 11. Mobile App Download Banner */}
