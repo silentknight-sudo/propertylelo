@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useReducedMotion } from 'motion/react';
 import { 
   Heart, 
   MapPin, 
@@ -15,6 +15,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Property } from '../types/property';
+import { propertyPath, propertyImageAlt } from '../lib/seo';
 
 interface PropertyCardProps {
   property: Property;
@@ -35,6 +36,37 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 }) => {
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const reduceMotion = useReducedMotion();
+
+  // Pointer-driven 3D tilt with a moving glare highlight
+  const cardRef = useRef<HTMLElement>(null);
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const springCfg = { stiffness: 220, damping: 20, mass: 0.6 };
+  const rotateX = useSpring(useTransform(py, [0, 1], [9, -9]), springCfg);
+  const rotateY = useSpring(useTransform(px, [0, 1], [-11, 11]), springCfg);
+  const glareX = useTransform(px, [0, 1], [0, 100]);
+  const glareY = useTransform(py, [0, 1], [0, 100]);
+  const glare = useMotionTemplate`radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.35), rgba(255,255,255,0) 55%)`;
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (reduceMotion || e.pointerType !== 'mouse' || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    px.set((e.clientX - rect.left) / rect.width);
+    py.set((e.clientY - rect.top) / rect.height);
+  };
+  const resetTilt = () => {
+    px.set(0.5);
+    py.set(0.5);
+  };
+
+  const detailHref = propertyPath(property);
+  const openDetails = (e: React.MouseEvent) => {
+    // Real <a href> for crawlers & new-tab; in-app we open the modal instead
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+    e.preventDefault();
+    onSelectProperty(property);
+  };
 
   const images = property.images && property.images.length > 0
     ? property.images
@@ -51,24 +83,44 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.35 }}
+    <motion.article
+      ref={cardRef}
+      itemScope
+      itemType="https://schema.org/RealEstateListing"
+      initial={reduceMotion ? false : { opacity: 0, y: 60, scale: 0.92 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '-60px' }}
+      whileHover={reduceMotion ? undefined : { y: -8, scale: 1.015 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      style={reduceMotion ? undefined : { rotateX, rotateY, transformPerspective: 1100 }}
+      onPointerMove={handlePointerMove}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100 flex flex-col justify-between group"
+      onMouseLeave={() => {
+        setIsHovered(false);
+        resetTilt();
+      }}
+      className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_30px_60px_-20px_rgba(0,40,105,0.35)] transition-shadow duration-300 border border-slate-100 flex flex-col justify-between group will-change-transform"
     >
+      {!reduceMotion && (
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-soft-light"
+          style={{ background: glare }}
+        />
+      )}
+      <meta itemProp="url" content={`https://propertylelo.com${detailHref}`} />
       <div>
         {/* Image Container & Carousel */}
         <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 cursor-pointer" onClick={() => onSelectProperty(property)}>
           <img
             src={images[currentImageIdx]}
-            alt={property.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            alt={propertyImageAlt(property, currentImageIdx)}
+            itemProp="image"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             loading="lazy"
+            decoding="async"
+            width={800}
+            height={500}
           />
 
           {/* Gradient overlay on image */}
@@ -165,12 +217,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           </div>
 
           {/* Title */}
-          <h3 
-            onClick={() => onSelectProperty(property)}
-            className="text-base font-bold text-slate-900 line-clamp-1 group-hover:text-[#002869] transition-colors cursor-pointer"
+          <h3
+            className="text-base font-bold text-slate-900 line-clamp-1 group-hover:text-[#002869] transition-colors"
             title={property.title}
+            itemProp="name"
           >
-            {property.title}
+            <a href={detailHref} onClick={openDetails} className="cursor-pointer focus:outline-none focus-visible:underline">
+              {property.title}
+            </a>
           </h3>
 
           {/* Locality & City */}
@@ -244,6 +298,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </motion.div>
+    </motion.article>
   );
 };
